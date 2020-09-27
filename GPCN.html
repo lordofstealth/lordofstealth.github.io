@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+.dropbtn {
+  background-color: #000000;
+  color: WHITE;
+  padding: 16px;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #000000;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+.dropdown-content a {
+  color: white;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+.dropdown-content a:hover {background-color: #808080}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.dropdown:hover .dropbtn {
+  background-color: #3e8e41;
+}
+</style>
+</head>
+<body>
+
+<h2>GPCN TROUBLESHOOT REPORT PAGE</h2>
+<p>CHOOSE A DEVICE FROM THE MENU BELOW.</p>
+
+<div class="dropdown">
+  <button class="dropbtn">CLICK HERE</button>
+  <div class="dropdown-content">
+  <a href="#">GPCN 1</a>
+  <a href="#">GPCN 2</a>
+  <a href="#">GPCN 3</a>
+  </div>
+</div>
+
+<p><strong>INFO:</strong> THIS ACTION MIGHT NEED ADMIN PRIVILAGE OR PIN CODE.</p>
+
+</body>
+</html>

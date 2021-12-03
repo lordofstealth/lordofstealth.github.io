@@ -1,0 +1,171 @@
+.home-container {
+  width: 100%;
+  display: flex;
+  z-index: 100;
+  overflow: auto;
+  box-shadow: 5px 5px 10px 0px #d4d4d4,5px 5px 10px 0px #d4d4d4;
+  min-height: 100vh;
+  align-items: center;
+  border-color: var(--dl-color-gray-black);
+  border-width: 1px;
+  flex-direction: column;
+  background-size: cover;
+  justify-content: center;
+  background-image: url('https://images.hdqwalls.com/wallpapers/train-railways-dark-evening-photography-0p.jpg');
+}
+.home-hi {
+  color: #ffffff;
+  z-index: 100;
+  align-self: center;
+  font-style: normal;
+  text-align: center;
+  font-weight: 900;
+  margin-right: 490px;
+  letter-spacing: 8px;
+  text-transform: uppercase;
+}
+.home-text {
+  color: #ffffff;
+  align-self: center;
+  text-align: center;
+  line-height: 3;
+  letter-spacing: 3.5px;
+  text-transform: capitalize;
+}
+.home-footer {
+  width: 218px;
+  display: flex;
+  position: relative;
+  flex-wrap: wrap;
+  max-width: var(--dl-size-size-maxwidth);
+  align-items: flex-start;
+  padding-top: var(--dl-space-space-twounits);
+  padding-left: var(--dl-space-space-threeunits);
+  padding-right: var(--dl-space-space-threeunits);
+  padding-bottom: var(--dl-space-space-twounits);
+  justify-content: center;
+}
+.home-container1 {
+  flex: 0 0 auto;
+  width: auto;
+  height: auto;
+  display: flex;
+  position: relative;
+  align-items: center;
+  flex-direction: column;
+}
+.home-container2 {
+  flex: 0 0 auto;
+  width: auto;
+  height: auto;
+  display: flex;
+  position: relative;
+  align-items: center;
+  flex-direction: column;
+}
+.home-container3 {
+  flex: 0 0 auto;
+  width: auto;
+  height: auto;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+.home-icon-group {
+  left: 510px;
+  border: 2px dashed rgba(120, 120, 120, 0.4);
+  bottom: 26px;
+  display: flex;
+  position: absolute;
+  align-self: center;
+  align-items: center;
+  flex-direction: row;
+  justify-content: center;
+}
+.home-link {
+  display: contents;
+}
+.home-image {
+  top: -9px;
+  left: -87px;
+  width: 21px;
+  height: 19px;
+  position: absolute;
+  align-self: center;
+  object-fit: cover;
+  text-decoration: none;
+}
+.home-link1 {
+  display: contents;
+}
+.home-image1 {
+  top: -14px;
+  flex: 0;
+  left: -12px;
+  width: 28px;
+  height: 30px;
+  position: absolute;
+  align-self: center;
+  object-fit: cover;
+  text-decoration: none;
+}
+.home-link2 {
+  display: contents;
+}
+.home-image2 {
+  top: 22px;
+  right: 18px;
+  width: 19px;
+  height: 20px;
+  position: absolute;
+  align-self: center;
+  object-fit: cover;
+  text-decoration: none;
+}
+@media(max-width: 767px) {
+  .home-hi {
+    top: 377px;
+    left: 37px;
+    width: 345px;
+    position: absolute;
+  }
+  .home-text {
+    width: 736px;
+  }
+  .home-footer {
+    padding-left: var(--dl-space-space-twounits);
+    padding-right: var(--dl-space-space-twounits);
+  }
+}
+@media(max-width: 479px) {
+  .home-hi {
+    top: 380px;
+    left: -35px;
+    width: 410px;
+    position: absolute;
+  }
+  .home-text {
+    width: 478px;
+  }
+  .home-footer {
+    width: 50px;
+    padding: var(--dl-space-space-unit);
+    align-items: flex-start;
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+  .home-image {
+    top: -9px;
+    right: -99px;
+  }
+  .home-image1 {
+    top: -14px;
+    left: 17px;
+    right: -53px;
+  }
+  .home-image2 {
+    top: 7px;
+    left: -18px;
+    right: 48px;
+  }
+}

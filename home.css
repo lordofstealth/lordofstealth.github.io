@@ -124,13 +124,13 @@
 }
 @media(max-width: 767px) {
   .home-hi {
-    top: 377px;
-    left: 37px;
+    top: 340px;
+    left: 5px;
     width: 345px;
     position: absolute;
   }
   .home-text {
-    width: 736px;
+    width: 498px;
   }
   .home-footer {
     padding-left: var(--dl-space-space-twounits);

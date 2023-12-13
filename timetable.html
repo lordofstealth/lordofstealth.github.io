@@ -27,7 +27,7 @@
       height: 100px;
     }
   </style>
-</head>
+  </head>
 <body>
 
   <h2>College Timetable</h2>
@@ -75,12 +75,64 @@
     </tr>
   </table>
 
+  
+
+  <!-- Include Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.5.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.5.0/firebase-database.js"></script>
+  <script>
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyDF0sLxrR4bDD_3g4sNLsi5VoUl5KnLV6E",
+  authDomain: "timetable-abe8b.firebaseapp.com",
+  databaseURL: "https://timetable-abe8b-default-rtdb.firebaseio.com",
+  projectId: "timetable-abe8b",
+  storageBucket: "timetable-abe8b.appspot.com",
+  messagingSenderId: "870218812103",
+  appId: "1:870218812103:web:4fe4c88d28505fe62e0ce2",
+  measurementId: "G-08TKMQQXLP"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+  </script>
+</head>
+<body>
+
+ 
+
+  <table>
+    <!-- Your timetable table here -->
+  </table>
+
   <div id="notice-box">
     <h3>Important Notices</h3>
     <form>
       <textarea name="notices" placeholder="Add important notices here..."></textarea>
     </form>
   </div>
+
+  <!-- Include Firebase JavaScript code -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const noticeTextarea = document.querySelector("textarea");
+      const noticesRef = firebase.database().ref("notices");
+
+      // Load initial notices from Firebase
+      noticesRef.on("value", (snapshot) => {
+        const notices = snapshot.val();
+        if (notices) {
+          noticeTextarea.value = notices;
+        }
+      });
+
+      // Update Firebase with changes in the textarea
+      noticeTextarea.addEventListener("input", () => {
+        const updatedNotices = noticeTextarea.value;
+        noticesRef.set(updatedNotices);
+      });
+    });
+  </script>
 
 </body>
 </html>

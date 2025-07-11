@@ -3,9 +3,17 @@
 <head>
   <title>Happy Birthday Lakshmi!</title>
 </head>
-<body style="margin: 0; font-family: 'Segoe UI', sans-serif; background: linear-gradient(120deg, #ffe6f7, #fff0e1); color: #333; padding: 40px; overflow-x: hidden;">
+<body style="margin: 0; font-family: 'Segoe UI', sans-serif; background: linear-gradient(120deg, #ffe6f7, #fff0e1); color: #333; padding: 0; overflow-x: hidden;">
 
-  <div style="max-width: 800px; margin: auto; background: white; padding: 40px; border-radius: 15px; box-shadow: 0 0 30px rgba(255, 182, 193, 0.4); position: relative;">
+  <!-- POPUP COVER -->
+  <div id="popup" style="position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: white; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+    <img src="lakshmi2.jpg" alt="Lakshmi's Surprise Photo" style="max-width: 80%; border-radius: 20px; box-shadow: 0 0 25px rgba(0,0,0,0.2); margin-bottom: 20px;">
+    <button onclick="document.getElementById('popup').style.display='none'" style="padding: 12px 24px; font-size: 18px; background-color: #e84393; color: white; border: none; border-radius: 8px; cursor: pointer;">
+      🎁 Tap to Continue
+    </button>
+  </div>
+
+  <div style="max-width: 800px; margin: auto; background: white; padding: 40px; border-radius: 15px; box-shadow: 0 0 30px rgba(255, 182, 193, 0.4); position: relative; margin-top: 60px;">
     
     <!-- Glitter stars -->
     <div style="position: absolute; top: -20px; left: -20px; font-size: 30px; transform: rotate(-20deg);">✨</div>

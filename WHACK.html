@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Whack-a-Lakshmi</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      background: #ffeaea;
+      text-align: center;
+    }
+
+    #game {
+      position: relative;
+      width: 100vw;
+      height: 50vh;
+      overflow: hidden;
+      margin-top: 20px;
+      border: 2px dashed #e17055;
+    }
+
+    #face {
+      width: 100px;
+      position: absolute;
+      top: 50px;
+      left: 50px;
+      border-radius: 50%;
+      display: none;
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+      cursor: pointer;
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0.4); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes whackEffect {
+      0% { transform: rotate(0deg) scale(1); }
+      20% { transform: rotate(10deg) scale(1.1); }
+      40% { transform: rotate(-10deg) scale(0.95); }
+      60% { transform: rotate(5deg) scale(1.05); }
+      80% { transform: rotate(-5deg) scale(1); }
+      100% { transform: scale(0); opacity: 0; }
+    }
+
+    .pop-in {
+      animation: popIn 0.2s ease-out;
+    }
+
+    .whacked {
+      animation: whackEffect 0.4s ease-out forwards;
+    }
+  </style>
+</head>
+<body>
+
+  <h1 style="color: #d63031; margin-top: 30px;">?? Whack-a-Lakshmi!</h1>
+  <p>Enter your name and whack her face to score!</p>
+
+  <!-- Name Input -->
+  <div style="margin-bottom: 20px;">
+    <input type="text" id="playerName" placeholder="Enter your name" style="padding: 10px; font-size: 16px;">
+    <button onclick="startGame()" style="padding: 10px 20px; font-size: 16px; background: #e84393; color: white; border: none; border-radius: 6px;">Start Game</button>
+  </div>
+
+  <h2>?? Player: <span id="nameDisplay">-</span></h2>
+  <h2>?? Score: <span id="score">0</span></h2>
+  <h2>? Time Left: <span id="time">30</span>s</h2>
+
+  <!-- Game Area -->
+  <div id="game"></div>
+
+  <!-- Face Image -->
+  <img src="lakshmi.jpg" id="face" onclick="whack()">
+
+  <!-- Leaderboard -->
+  <div style="margin-top: 50px;">
+    <h2>?? Leaderboard (Top 5)</h2>
+    <ol id="leaderboard" style="font-size: 18px;"></ol>
+  </div>
+
+  <!-- Whack Sound -->
+  <audio id="whackSound" src="whack.mp3" preload="auto"></audio>
+
+  <script>
+    // === CONFIG ===
+    const SUPABASE_URL = 'https://YOUR_PROJECT.supabase.co'; // ? replace
+    const SUPABASE_KEY = 'YOUR_ANON_KEY'; // ? replace
+
+    const face = document.getElementById('face');
+    const scoreDisplay = document.getElementById('score');
+    const nameDisplay = document.getElementById('nameDisplay');
+    const playerInput = document.getElementById('playerName');
+    const leaderboard = document.getElementById('leaderboard');
+    const timeDisplay = document.getElementById('time');
+    const whackSound = document.getElementById('whackSound');
+
+    let score = 0;
+    let interval;
+    let countdown;
+    let timeLeft = 30;
+    let player = '';
+
+    async function saveScore(name, score) {
+      await fetch(`${SUPABASE_URL}/rest/v1/scores`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': SUPABASE_KEY,
+          'Authorization': `Bearer ${SUPABASE_KEY}`
+        },
+        body: JSON.stringify([{ name: name, score: score }])
+      });
+      getLeaderboard();
+    }
+
+    async function getLeaderboard() {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/scores?select=name,score&order=score.desc&limit=5`, {
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': `Bearer ${SUPABASE_KEY}`
+        }
+      });
+      const data = await res.json();
+      leaderboard.innerHTML = '';
+      data.forEach(entry => {
+        leaderboard.innerHTML += `<li><strong>${entry.name}</strong>: ${entry.score}</li>`;
+      });
+    }
+
+    function startGame() {
+      player = playerInput.value.trim() || 'Anonymous';
+      nameDisplay.textContent = player;
+      score = 0;
+      timeLeft = 30;
+      scoreDisplay.textContent = score;
+      timeDisplay.textContent = timeLeft;
+      getLeaderboard();
+
+      if (interval) clearInterval(interval);
+      if (countdown) clearInterval(countdown);
+
+      interval = setInterval(moveFace, 1200);
+
+      countdown = setInterval(() => {
+        timeLeft--;
+        timeDisplay.textContent = timeLeft;
+        if (timeLeft <= 0) {
+          clearInterval(interval);
+          clearInterval(countdown);
+          face.style.display = 'none';
+          alert(`? Time's up!\n?? Your final score: ${score}`);
+          saveScore(player, score);
+        }
+      }, 1000);
+    }
+
+    function moveFace() {
+      const game = document.getElementById('game');
+      const maxX = game.clientWidth - 100;
+      const maxY = game.clientHeight - 100;
+
+      const x = Math.random() * maxX;
+      const y = Math.random() * maxY;
+
+      face.style.left = x + 'px';
+      face.style.top = y + 'px';
+      face.style.display = 'block';
+
+      // Reset animation
+      face.classList.remove('pop-in');
+      void face.offsetWidth;
+      face.classList.add('pop-in');
+    }
+
+    function whack() {
+      score++;
+      scoreDisplay.textContent = score;
+
+      // Play animation
+      face.classList.remove('whacked');
+      void face.offsetWidth;
+      face.classList.add('whacked');
+
+      whackSound.currentTime = 0;
+      whackSound.play();
+
+      setTimeout(() => {
+        face.style.display = 'none';
+        face.classList.remove('whacked');
+      }, 400);
+    }
+
+    // Load leaderboard on page load
+    getLeaderboard();
+  </script>
+
+</body>
+</html>

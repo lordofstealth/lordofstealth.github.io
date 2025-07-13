@@ -83,10 +83,13 @@
   <!-- Whack Sound -->
   <audio id="whackSound" src="whack.mp3" preload="auto"></audio>
 
+  <!-- Confetti Library -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
   <script>
     // === CONFIG ===
     const SUPABASE_URL = 'https://nsegqxphhqqsaxnjniip.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5zZWdxeHBoaHFxc2F4bmpuaWlwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIzOTQwNDMsImV4cCI6MjA2Nzk3MDA0M30.hlubB9tcbwL5OwJeo9GakvdYF3cTP1a778sgpo8S6QU';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'; // Your full key here
 
     const face = document.getElementById('face');
     const scoreDisplay = document.getElementById('score');
@@ -155,8 +158,18 @@
           clearInterval(interval);
           clearInterval(countdown);
           face.style.display = 'none';
-          alert(`⏱ Time's up!\n🎯 Your final score: ${score}`);
-          saveScore(player, score);
+
+          // 🎉 Trigger confetti!
+          confetti({
+            particleCount: 200,
+            spread: 100,
+            origin: { y: 0.6 }
+          });
+
+          setTimeout(() => {
+            alert(`⏱ Time's up!\n🎯 Your final score: ${score}`);
+            saveScore(player, score);
+          }, 300);
         }
       }, 1000);
     }

@@ -6,8 +6,23 @@
     body {
       margin: 0;
       font-family: sans-serif;
-      background: #ffeaea;
       text-align: center;
+      background: linear-gradient(-45deg, #2c3e50, #8e44ad, #c0392b, #f39c12);
+      background-size: 800% 800%;
+      animation: gradientMove 20s ease infinite;
+      overflow-x: hidden;
+      color: #fff;
+    }
+
+    @keyframes gradientMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    @keyframes floatUp {
+      0% { transform: translateY(0); opacity: 1; }
+      100% { transform: translateY(-120vh); opacity: 0; }
     }
 
     #game {
@@ -55,7 +70,10 @@
 </head>
 <body>
 
-  <h1 style="color: #d63031; margin-top: 30px;">🎯 Whack-a-Lakshmi!</h1>
+  <!-- Balloon Rain -->
+  <div id="balloons" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0;"></div>
+
+  <h1 style="margin-top: 30px;">🎯 Whack-a-Lakshmi!</h1>
   <p>Enter your name and whack her face to score!</p>
 
   <!-- Name Input -->
@@ -83,13 +101,13 @@
   <!-- Whack Sound -->
   <audio id="whackSound" src="whack.mp3" preload="auto"></audio>
 
-  <!-- Confetti Library -->
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <!-- Confetti Canvas -->
+  <canvas id="confetti" style="position: fixed; pointer-events: none; top: 0; left: 0; width: 100%; height: 100%; z-index: 10;"></canvas>
 
   <script>
     // === CONFIG ===
     const SUPABASE_URL = 'https://nsegqxphhqqsaxnjniip.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'; // Your full key here
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'; // your full key here
 
     const face = document.getElementById('face');
     const scoreDisplay = document.getElementById('score');
@@ -120,7 +138,6 @@
 
     async function getLeaderboard() {
       const url = `${SUPABASE_URL}/rest/v1/scores?select=name,score&order=score.desc.nullslast&limit=5`;
-
       const res = await fetch(url, {
         headers: {
           'apikey': SUPABASE_KEY,
@@ -129,7 +146,6 @@
           'Accept': 'application/json'
         }
       });
-
       const data = await res.json();
       leaderboard.innerHTML = '';
       data.forEach(entry => {
@@ -145,12 +161,9 @@
       scoreDisplay.textContent = score;
       timeDisplay.textContent = timeLeft;
       getLeaderboard();
-
       if (interval) clearInterval(interval);
       if (countdown) clearInterval(countdown);
-
-      interval = setInterval(moveFace, 1200);
-
+      interval = setInterval(moveFace, 1000);
       countdown = setInterval(() => {
         timeLeft--;
         timeDisplay.textContent = timeLeft;
@@ -158,18 +171,9 @@
           clearInterval(interval);
           clearInterval(countdown);
           face.style.display = 'none';
-
-          // 🎉 Trigger confetti!
-          confetti({
-            particleCount: 200,
-            spread: 100,
-            origin: { y: 0.6 }
-          });
-
-          setTimeout(() => {
-            alert(`⏱ Time's up!\n🎯 Your final score: ${score}`);
-            saveScore(player, score);
-          }, 300);
+          alert(`⏱ Time's up!\n🎯 Your final score: ${score}`);
+          saveScore(player, score);
+          launchConfetti();
         }
       }, 1000);
     }
@@ -178,14 +182,11 @@
       const game = document.getElementById('game');
       const maxX = game.clientWidth - 100;
       const maxY = game.clientHeight - 100;
-
       const x = Math.random() * maxX;
       const y = Math.random() * maxY;
-
       face.style.left = x + 'px';
       face.style.top = y + 'px';
       face.style.display = 'block';
-
       face.classList.remove('pop-in');
       void face.offsetWidth;
       face.classList.add('pop-in');
@@ -194,14 +195,11 @@
     function whack() {
       score++;
       scoreDisplay.textContent = score;
-
       face.classList.remove('whacked');
       void face.offsetWidth;
       face.classList.add('whacked');
-
       whackSound.currentTime = 0;
       whackSound.play();
-
       setTimeout(() => {
         face.style.display = 'none';
         face.classList.remove('whacked');
@@ -209,7 +207,49 @@
     }
 
     getLeaderboard();
-  </script>
 
+    // 🎈 Balloon Rain
+    const balloonContainer = document.getElementById('balloons');
+    setInterval(() => {
+      const balloon = document.createElement('div');
+      balloon.textContent = '🎈';
+      balloon.style.position = 'absolute';
+      balloon.style.left = Math.random() * 100 + 'vw';
+      balloon.style.top = '100vh';
+      balloon.style.fontSize = '2em';
+      balloon.style.zIndex = '0';
+      balloon.style.animation = `floatUp ${5 + Math.random() * 5}s linear forwards`;
+      balloonContainer.appendChild(balloon);
+      setTimeout(() => balloon.remove(), 10000);
+    }, 400);
+
+    // 🎊 Confetti
+    function launchConfetti() {
+      const canvas = document.getElementById('confetti');
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      let pieces = Array.from({ length: 150 }, () => ({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        size: Math.random() * 5 + 2,
+        speed: Math.random() * 3 + 2,
+        color: `hsl(${Math.random() * 360}, 100%, 70%)`
+      }));
+
+      const confettiInterval = setInterval(() => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        pieces.forEach(p => {
+          ctx.fillStyle = p.color;
+          ctx.fillRect(p.x, p.y, p.size, p.size);
+          p.y += p.speed;
+          if (p.y > canvas.height) p.y = -p.size;
+        });
+      }, 30);
+
+      setTimeout(() => clearInterval(confettiInterval), 3000);
+    }
+  </script>
 </body>
 </html>

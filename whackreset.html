@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Reset Whack-a-Lakshmi Scores</title>
+</head>
+<body style="font-family: sans-serif; background: linear-gradient(to right, #2c3e50, #bdc3c7); color: white; text-align: center; padding-top: 100px;">
+
+  <h1>?? Reset Leaderboard</h1>
+  <p>This will delete <b>ALL scores</b> from the Whack-a-Lakshmi leaderboard!</p>
+
+  <button onclick="resetScores()" style="padding: 15px 30px; font-size: 18px; background-color: #e74c3c; border: none; border-radius: 6px; color: white; cursor: pointer;">
+    ??? Reset Scores
+  </button>
+
+  <p id="status" style="margin-top: 30px; font-size: 16px;"></p>
+
+  <script>
+    const SUPABASE_URL = 'https://nsegqxphhqqsaxnjniip.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5zZWdxeHBoaHFxc2F4bmpuaWlwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIzOTQwNDMsImV4cCI6MjA2Nzk3MDA0M30.hlubB9tcbwL5OwJeo9GakvdYF3cTP1a778sgpo8S6QU'; // truncated for safety
+
+    async function resetScores() {
+      const confirmed = confirm("Are you sure you want to DELETE ALL scores?");
+      if (!confirmed) return;
+
+      document.getElementById('status').textContent = "Deleting scores...";
+
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/scores`, {
+        method: 'DELETE',
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': `Bearer ${SUPABASE_KEY}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (res.ok) {
+        document.getElementById('status').textContent = "? All scores deleted!";
+      } else {
+        document.getElementById('status').textContent = "? Failed to delete scores.";
+      }
+    }
+  </script>
+
+</body>
+</html>
+

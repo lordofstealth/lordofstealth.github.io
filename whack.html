@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Whack-a-Lakshmi</title>
+  <title>Kiss-a-Lakshmi 💋</title>
   <style>
     body {
       margin: 0;
@@ -35,7 +35,7 @@
     }
 
     #face {
-      width: 100px;
+      width: min(100px, 20vw);
       position: absolute;
       top: 50px;
       left: 50px;
@@ -50,12 +50,10 @@
       100% { transform: scale(1); opacity: 1; }
     }
 
-    @keyframes whackEffect {
-      0% { transform: rotate(0deg) scale(1); }
-      20% { transform: rotate(10deg) scale(1.1); }
-      40% { transform: rotate(-10deg) scale(0.95); }
-      60% { transform: rotate(5deg) scale(1.05); }
-      80% { transform: rotate(-5deg) scale(1); }
+    @keyframes kissEffect {
+      0% { transform: scale(1); }
+      25% { transform: scale(1.3); }
+      50% { transform: scale(1); }
       100% { transform: scale(0); opacity: 0; }
     }
 
@@ -63,8 +61,8 @@
       animation: popIn 0.2s ease-out;
     }
 
-    .whacked {
-      animation: whackEffect 0.4s ease-out forwards;
+    .kissed {
+      animation: kissEffect 0.4s ease-out forwards;
     }
   </style>
 </head>
@@ -73,8 +71,8 @@
   <!-- Balloon Rain -->
   <div id="balloons" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0;"></div>
 
-  <h1 style="margin-top: 30px;">🎯 Whack-a-Lakshmi!</h1>
-  <p>Enter your name and whack her face to score!</p>
+  <h1 style="margin-top: 30px;">💋 Kiss-a-Lakshmi!</h1>
+  <p>Enter your name and kiss her face to score!</p>
 
   <!-- Name Input -->
   <div style="margin-bottom: 20px;">
@@ -83,23 +81,23 @@
   </div>
 
   <h2>👤 Player: <span id="nameDisplay">-</span></h2>
-  <h2>🎯 Score: <span id="score">0</span></h2>
+  <h2>💖 Score: <span id="score">0</span></h2>
   <h2>⏱ Time Left: <span id="time">45</span>s</h2>
 
   <!-- Game Area -->
   <div id="game"></div>
 
   <!-- Face Image -->
-  <img src="lakshmi.jpg" id="face" onclick="whack()">
+  <img src="lakshmi.jpg" id="face" onclick="kiss()">
 
   <!-- Leaderboard -->
   <div style="margin-top: 50px;">
-    <h2>🏆 Leaderboard (Top 5)</h2>
+    <h2>❤️ Leaderboard (Top 5)</h2>
     <ol id="leaderboard" style="font-size: 18px;"></ol>
   </div>
 
-  <!-- Whack Sound -->
-  <audio id="whackSound" src="whack.mp3" preload="auto"></audio>
+  <!-- Kiss Sound -->
+  <audio id="kissSound" src="kiss.mp3" preload="auto"></audio>
 
   <!-- Confetti Canvas -->
   <canvas id="confetti" style="position: fixed; pointer-events: none; top: 0; left: 0; width: 100%; height: 100%; z-index: 10;"></canvas>
@@ -107,7 +105,7 @@
   <script>
     // === CONFIG ===
     const SUPABASE_URL = 'https://nsegqxphhqqsaxnjniip.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5zZWdxeHBoaHFxc2F4bmpuaWlwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIzOTQwNDMsImV4cCI6MjA2Nzk3MDA0M30.hlubB9tcbwL5OwJeo9GakvdYF3cTP1a778sgpo8S6QU'; // your full key here
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5zZWdxeHBoaHFxc2F4bmpuaWlwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIzOTQwNDMsImV4cCI6MjA2Nzk3MDA0M30.hlubB9tcbwL5OwJeo9GakvdYF3cTP1a778sgpo8S6QU';
 
     const face = document.getElementById('face');
     const scoreDisplay = document.getElementById('score');
@@ -115,13 +113,14 @@
     const playerInput = document.getElementById('playerName');
     const leaderboard = document.getElementById('leaderboard');
     const timeDisplay = document.getElementById('time');
-    const whackSound = document.getElementById('whackSound');
+    const kissSound = document.getElementById('kissSound');
 
     let score = 0;
     let interval;
     let countdown;
     let timeLeft = 45;
     let player = '';
+    let canKiss = true;
 
     async function saveScore(name, score) {
       await fetch(`${SUPABASE_URL}/rest/v1/scores`, {
@@ -137,24 +136,28 @@
     }
 
     async function getLeaderboard() {
-      const url = `${SUPABASE_URL}/rest/v1/scores?select=name,score&order=score.desc.nullslast&limit=5`;
-      const res = await fetch(url, {
-        headers: {
-          'apikey': SUPABASE_KEY,
-          'Authorization': `Bearer ${SUPABASE_KEY}`,
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        }
-      });
-      const data = await res.json();
-      leaderboard.innerHTML = '';
-      data.forEach(entry => {
-        leaderboard.innerHTML += `<li><strong>${entry.name}</strong>: ${entry.score}</li>`;
-      });
+      try {
+        const url = `${SUPABASE_URL}/rest/v1/scores?select=name,score&order=score.desc.nullslast&limit=5`;
+        const res = await fetch(url, {
+          headers: {
+            'apikey': SUPABASE_KEY,
+            'Authorization': `Bearer ${SUPABASE_KEY}`,
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          }
+        });
+        const data = await res.json();
+        leaderboard.innerHTML = '';
+        data.forEach(entry => {
+          leaderboard.innerHTML += `<li><strong>${entry.name}</strong>: ${entry.score}</li>`;
+        });
+      } catch {
+        leaderboard.innerHTML = '<li>⚠️ Failed to load leaderboard</li>';
+      }
     }
 
     function startGame() {
-      player = playerInput.value.trim() || 'Anonymous';
+      player = playerInput.value.trim().replace(/[^a-zA-Z0-9 _-]/g, '').slice(0, 15) || 'Anonymous';
       nameDisplay.textContent = player;
       score = 0;
       timeLeft = 45;
@@ -171,7 +174,7 @@
           clearInterval(interval);
           clearInterval(countdown);
           face.style.display = 'none';
-          alert(`⏱ Time's up!\n🎯 Your final score: ${score}`);
+          alert(`⏱ Time's up!\n💖 Your final score: ${score}`);
           saveScore(player, score);
           launchConfetti();
         }
@@ -192,27 +195,30 @@
       face.classList.add('pop-in');
     }
 
-    function whack() {
+    function kiss() {
+      if (!canKiss) return;
+      canKiss = false;
       score++;
       scoreDisplay.textContent = score;
-      face.classList.remove('whacked');
+      face.classList.remove('kissed');
       void face.offsetWidth;
-      face.classList.add('whacked');
-      whackSound.currentTime = 0;
-      whackSound.play();
+      face.classList.add('kissed');
+      kissSound.currentTime = 0;
+      kissSound.play();
       setTimeout(() => {
         face.style.display = 'none';
-        face.classList.remove('whacked');
+        face.classList.remove('kissed');
+        canKiss = true;
       }, 400);
     }
 
     getLeaderboard();
 
-    // 🎈 Balloon Rain
+    // 💘 Balloon Rain
     const balloonContainer = document.getElementById('balloons');
     setInterval(() => {
       const balloon = document.createElement('div');
-      balloon.textContent = '🍗';
+      balloon.textContent = '💘';
       balloon.style.position = 'absolute';
       balloon.style.left = Math.random() * 100 + 'vw';
       balloon.style.top = '100vh';
@@ -251,10 +257,13 @@
       setTimeout(() => clearInterval(confettiInterval), 3000);
     }
   </script>
+
   <script>
-  window.onload = function () {
-    alert("🎯 How to Play Whack-a-Lakshmi:\n\n👉 Enter your name\n👉 Whack Lakshmi’s face as fast as you can\n👉 Each hit = 1 point\n💰 Score 40+ to win ₹100!\n⏱ You have 45 seconds\n \n🔥 Try to top the leaderboard!");
-  };
-</script>
+    window.onload = function () {
+      alert("💋 How to Play Kiss-a-Lakshmi:\n\n👉 Enter your name\n👉 Kiss Lakshmi’s face as fast as you can\n👉 Each kiss = 1 point\n❤️ Score 40+ to win her heart!\n⏱ You have 45 seconds\n\n🔥 Try to top the leaderboard!");
+    };
+  </script>
+
 </body>
 </html>
+

@@ -253,6 +253,23 @@
       face.classList.add('kissed');
       kissSound.currentTime = 0;
       kissSound.play();
+      
+            // 💋 Floating kiss emoji
+      const emoji = document.createElement('div');
+      emoji.textContent = '💋';
+      emoji.style.position = 'absolute';
+      emoji.style.left = (face.offsetLeft + face.offsetWidth / 2) + 'px';
+      emoji.style.top = (face.offsetTop - 10) + 'px';
+      emoji.style.fontSize = '2em';
+      emoji.style.pointerEvents = 'none';
+      emoji.style.animation = 'floatUp 1s ease-out forwards';
+      document.body.appendChild(emoji);
+      setTimeout(() => emoji.remove(), 1000);
+
+      // 📱 Mobile Vibration
+      if (navigator.vibrate) navigator.vibrate(100);
+
+      
 
       // 🔥 Show hot streak message
       if (streak >= 3) {

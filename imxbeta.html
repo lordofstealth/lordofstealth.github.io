@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Kiss-a-Lakshmi ??</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      text-align: center;
+      background: linear-gradient(-45deg, #2c3e50, #8e44ad, #c0392b, #f39c12);
+      background-size: 800% 800%;
+      animation: gradientMove 20s ease infinite;
+      overflow-x: hidden;
+      color: #fff;
+      transition: background 0.5s ease;
+    }
+
+    body.valentine {
+      background: linear-gradient(45deg, #ff6b81, #f8a5c2, #f78fb3);
+    }
+
+    @keyframes gradientMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    @keyframes floatUp {
+      0% { transform: translateY(0); opacity: 1; }
+      100% { transform: translateY(-120vh); opacity: 0; }
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0.4); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes kissEffect {
+      0% { transform: scale(1); }
+      25% { transform: scale(1.3); }
+      50% { transform: scale(1); }
+      100% { transform: scale(0); opacity: 0; }
+    }
+
+    @keyframes scorePop {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.4); }
+      100% { transform: scale(1); }
+    }
+
+    #game {
+      position: relative;
+      width: 100vw;
+      height: 50vh;
+      overflow: hidden;
+      margin-top: 20px;
+      border: 2px dashed #e17055;
+    }
+
+    #face {
+      width: min(100px, 20vw);
+      position: absolute;
+      top: 50px;
+      left: 50px;
+      border-radius: 50%;
+      display: none;
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+      cursor: pointer;
+      z-index: 2;
+    }
+
+    .pop-in { animation: popIn 0.2s ease-out; }
+    .kissed { animation: kissEffect 0.4s ease-out forwards; }
+    .score-animate { animation: scorePop 0.3s ease; }
+
+    #streakMsg {
+      position: fixed;
+      top: 20%;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 3em;
+      color: #ff7675;
+      text-shadow: 2px 2px 8px #000;
+      z-index: 9999;
+      display: none;
+    }
+
+    #lakshmiSays {
+      font-style: italic;
+      font-size: 18px;
+      margin-top: 10px;
+      color: #ffeaa7;
+    }
+  </style>
+</head>
+<body>
+  <div id="balloons" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0;"></div>
+
+  <button onclick="toggleValentine()" style="position: fixed; top: 10px; right: 10px; z-index: 5;">?? Theme</button>
+
+  <h1 style="margin-top: 30px;">?? Kiss-a-Lakshmi!</h1>
+  <p>Enter your name and kiss her face to score!</p>
+
+  <div style="margin-bottom: 20px;">
+    <input type="text" id="playerName" placeholder="Enter your name" style="padding: 10px; font-size: 16px;">
+    <button onclick="startGame()" style="padding: 10px 20px; font-size: 16px; background: #e84393; color: white; border: none; border-radius: 6px;">Start Game</button>
+  </div>
+
+  <h2>?? Player: <span id="nameDisplay">-</span></h2>
+  <h2>?? Score: <span id="score">0</span></h2>
+  <h2>? Time Left: <span id="time">45</span>s</h2>
+  <div id="lakshmiSays">Lakshmi says: "Be quick! ??"</div>
+
+  <div id="game"></div>
+  <img src="lakshmi.jpg" id="face" onclick="kiss()">
+  <div id="streakMsg">?? Hot Streak!</div>
+  <ol id="leaderboard" style="font-size: 18px;"></ol>
+
+  <audio id="kissSound" src="kiss.mp3" preload="auto"></audio>
+  <canvas id="confetti" style="position: fixed; pointer-events: none; top: 0; left: 0; width: 100%; height: 100%; z-index: 10;"></canvas>
+
+  <script>
+    const SUPABASE_URL = 'https://nsegqxphhqqsaxnjniip.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5zZWdxeHBoaHFxc2F4bmpuaWlwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIzOTQwNDMsImV4cCI6MjA2Nzk3MDA0M30.hlubB9tcbwL5OwJeo9GakvdYF3cTP1a778sgpo8S6QU';
+
+    const face = document.getElementById('face');
+    const scoreDisplay = document.getElementById('score');
+    const nameDisplay = document.getElementById('nameDisplay');
+    const playerInput = document.getElementById('playerName');
+    const leaderboard = document.getElementById('leaderboard');
+    const timeDisplay = document.getElementById('time');
+    const kissSound = document.getElementById('kissSound');
+    const streakMsg = document.getElementById('streakMsg');
+    const lakshmiSays = document.getElementById('lakshmiSays');
+
+    let score = 0;
+    let interval, countdown, timeLeft = 45;
+    let player = '', canKiss = true;
+    let lastKiss = 0, streak = 0;
+    const sayings = ["Faster!", "Nice one ??", "You're on fire!", "More kisses!", "She likes it! ??"];
+
+    function toggleValentine() {
+      document.body.classList.toggle('valentine');
+    }
+
+    function startGame() {
+      player = playerInput.value.trim().replace(/[^a-zA-Z0-9 _-]/g, '').slice(0, 15) || 'Anonymous';
+      nameDisplay.textContent = player;
+      score = 0;
+      timeLeft = 45;
+      scoreDisplay.textContent = score;
+      timeDisplay.textContent = timeLeft;
+      getLeaderboard();
+      if (interval) clearInterval(interval);
+      if (countdown) clearInterval(countdown);
+      interval = setInterval(moveFace, 1000);
+      countdown = setInterval(() => {
+        timeLeft--;
+        timeDisplay.textContent = timeLeft;
+        if (timeLeft <= 0) {
+          clearInterval(interval);
+          clearInterval(countdown);
+          face.style.display = 'none';
+          alert(`? Time's up!\n?? You kissed ${score} times`);
+          saveScore(player, score);
+          launchConfetti();
+        }
+      }, 1000);
+    }
+
+    function moveFace() {
+      const game = document.getElementById('game');
+      const maxX = game.clientWidth - 100;
+      const maxY = game.clientHeight - 100;
+      const x = Math.random() * maxX;
+      const y = Math.random() * maxY;
+      face.style.left = x + 'px';
+      face.style.top = y + 'px';
+      face.style.display = 'block';
+      face.classList.remove('pop-in');
+      void face.offsetWidth;
+      face.classList.add('pop-in');
+
+      if (Math.random() < 0.1) face.style.display = 'none';
+    }
+
+    function kiss() {
+      if (!canKiss) return;
+      canKiss = false;
+      const now = Date.now();
+      if (now - lastKiss < 1200) {
+        streak++;
+        if (streak >= 3) showStreak();
+      } else {
+        streak = 1;
+      }
+      lastKiss = now;
+
+      score++;
+      scoreDisplay.textContent = score;
+      scoreDisplay.classList.remove('score-animate');
+      void scoreDisplay.offsetWidth;
+      scoreDisplay.classList.add('score-animate');
+
+      face.classList.remove('kissed');
+      void face.offsetWidth;
+      face.classList.add('kissed');
+      kissSound.currentTime = 0;
+      kissSound.play();
+      if (navigator.vibrate) navigator.vibrate(50);
+      emojiFloat();
+      launchConfetti();
+
+      lakshmiSays.textContent = 'Lakshmi says: "' + sayings[Math.floor(Math.random() * sayings.length)] + '"';
+
+      setTimeout(() => {
+        face.style.display = 'none';
+        face.classList.remove('kissed');
+        canKiss = true;
+      }, 400);
+    }
+
+    function showStreak() {
+      streakMsg.style.display = 'block';
+      setTimeout(() => streakMsg.style.display = 'none', 1000);
+    }
+
+    function emojiFloat() {
+      const emoji = document.createElement('div');
+      emoji.textContent = Math.random() > 0.5 ? '??' : '??';
+      emoji.style.position = 'absolute';
+      emoji.style.left = face.offsetLeft + 'px';
+      emoji.style.top = face.offsetTop + 'px';
+      emoji.style.fontSize = '2em';
+      emoji.style.zIndex = '3';
+      emoji.style.animation = `floatUp 1.2s ease-out forwards`;
+      document.body.appendChild(emoji);
+      setTimeout(() => emoji.remove(), 1200);
+    }
+
+    async function saveScore(name, score) {
+      // save logic...
+    }
+
+    async function getLeaderboard() {
+      // fetch logic...
+    }
+
+    function launchConfetti() {
+      const canvas = document.getElementById('confetti');
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      let pieces = Array.from({ length: 40 }, () => ({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        size: Math.random() * 5 + 2,
+        speed: Math.random() * 3 + 2,
+        color: `hsl(${Math.random() * 360}, 100%, 70%)`
+      }));
+      const confettiInterval = setInterval(() => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        pieces.forEach(p => {
+          ctx.fillStyle = p.color;
+          ctx.fillRect(p.x, p.y, p.size, p.size);
+          p.y += p.speed;
+          if (p.y > canvas.height) p.y = -p.size;
+        });
+      }, 30);
+      setTimeout(() => clearInterval(confettiInterval), 1000);
+    }
+
+    setInterval(() => {
+      const balloon = document.createElement('div');
+      balloon.textContent = '??';
+      balloon.style.position = 'absolute';
+      balloon.style.left = Math.random() * 100 + 'vw';
+      balloon.style.top = '100vh';
+      balloon.style.fontSize = '2em';
+      balloon.style.zIndex = '0';
+      balloon.style.animation = `floatUp ${5 + Math.random() * 5}s linear forwards`;
+      document.getElementById('balloons').appendChild(balloon);
+      setTimeout(() => balloon.remove(), 10000);
+    }, 400);
+
+    window.onload = function () {
+      alert("?? How to Play Kiss-a-Lakshmi:\n\n?? Enter your name\n?? Kiss Lakshmi’s face as fast as you can\n?? Each kiss = 1 point\n?? Score 40+ to win ? 100\n? You have 45 seconds\n\n?? Try to top the leaderboard!");
+    };
+  </script>
+</body>
+</html>

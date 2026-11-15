@@ -67,7 +67,7 @@
       <div class="slot"><input type="checkbox" id="meal2"><label for="meal2"><span class="meal">Afternoon</span><span class="time">3:30 PM</span></label></div>
       <div class="slot"><input type="checkbox" id="meal3"><label for="meal3"><span class="meal">Dinner</span><span class="time">7:00 PM</span></label></div>
     </div>
-    <p class="note">Tick each one when she confirms she has eaten. Checkmarks are temporary and reset if you refresh or close the page — nothing is saved.</p>
+    <p class="note">Tick each one when she confirms she has eaten. Checkmarks are saved in this browser.</p>
   </section>
   <p class="footer">Started 10 November 2026 · Day 60 is 8 January 2027</p>
 </main>
@@ -93,13 +93,97 @@
   document.getElementById('progressBar').setAttribute('aria-valuenow', day);
 
   const checks = [...document.querySelectorAll('.slot input')];
-  const update = () => {
+  const storageKey = `60-days-food-checkins-${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+  const binId = '6afa3040ac6210605a8a49aa';
+  const accessKey = '$2a$10$bt9dn43e9rY2hBjNqeVmmurPCeTvx5YE1OpSlPdFtULLFP9u.GURq';
+  const apiUrl = `https://api.jsonbin.io/v3/b/${binId}`;
+  const dateKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+  const note = document.querySelector('.note');
+  let saveQueue = Promise.resolve();
+  let cloudReady = false;
+
+  const getChecks = () => checks.map(c => c.checked);
+  const showChecks = values => {
+    checks.forEach((c, i) => { c.checked = values?.[i] === true; });
+    updateDisplay();
+  };
+  const updateDisplay = () => {
     const count = checks.filter(c => c.checked).length;
     document.getElementById('doneNum').textContent = `${count}/4`;
     checks.forEach(c => c.closest('.slot').classList.toggle('done', c.checked));
   };
-  checks.forEach(c => c.addEventListener('change', update));
-  update();
+
+  // Load the shared check-ins from JSONBin. Keep a local copy as an offline fallback.
+  const loadCloud = async () => {
+    try {
+      const response = await fetch(`${apiUrl}/latest`, {
+        headers: { 'X-Access-Key': accessKey }
+      });
+      if (!response.ok) throw new Error(`JSONBin read failed (${response.status})`);
+      const result = await response.json();
+      const days = result.record?.days || {};
+      cloudReady = true;
+      if (Array.isArray(days[dateKey])) {
+        showChecks(days[dateKey]);
+      } else {
+        let local = [];
+        try { local = JSON.parse(localStorage.getItem(storageKey) || '[]'); } catch (_) {}
+        showChecks(local);
+        if (local.some(Boolean)) queueCloudSave();
+      }
+      note.textContent = 'Check-ins sync online across devices.';
+    } catch (error) {
+      let local = [];
+      try { local = JSON.parse(localStorage.getItem(storageKey) || '[]'); } catch (_) {}
+      showChecks(local);
+      note.textContent = 'Could not connect to online storage. Check-ins are saved on this device for now.';
+      console.error(error);
+    }
+  };
+
+  // Read the latest record before updating so check-ins for other dates are preserved.
+  const saveCloud = async () => {
+    const values = getChecks();
+    try {
+      const read = await fetch(`${apiUrl}/latest`, {
+        headers: { 'X-Access-Key': accessKey }
+      });
+      if (!read.ok) throw new Error(`JSONBin read failed (${read.status})`);
+      const result = await read.json();
+      const record = result.record && typeof result.record === 'object' ? result.record : {};
+      record.days = record.days && typeof record.days === 'object' ? record.days : {};
+      record.days[dateKey] = values;
+
+      const write = await fetch(apiUrl, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Access-Key': accessKey
+        },
+        body: JSON.stringify(record)
+      });
+      if (!write.ok) throw new Error(`JSONBin update failed (${write.status})`);
+      note.textContent = 'Check-ins saved online.';
+    } catch (error) {
+      note.textContent = 'Online save failed. Your check-ins are saved on this device; please try again later.';
+      console.error(error);
+    }
+  };
+
+  const queueCloudSave = () => {
+    saveQueue = saveQueue.then(saveCloud, saveCloud);
+  };
+
+  checks.forEach(c => c.addEventListener('change', () => {
+    updateDisplay();
+    try { localStorage.setItem(storageKey, JSON.stringify(getChecks())); } catch (_) {}
+    if (cloudReady) queueCloudSave();
+  }));
+
+  // Restore immediately from this browser, then replace with the shared online copy.
+  try { showChecks(JSON.parse(localStorage.getItem(storageKey) || '[]')); }
+  catch (_) { updateDisplay(); }
+  loadCloud();
 
   if (day === 0) document.getElementById('leftNum').textContent = totalDays;
   if (day === totalDays) document.getElementById('dayHeading').textContent = 'Day 60 · You made it!';

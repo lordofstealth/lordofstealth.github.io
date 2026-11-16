@@ -156,4 +156,110 @@ main{width:min(1040px,100%);margin:auto}.top{display:flex;justify-content:space-
       renderAll();
     }catch(err){
       $("cloudStatus").textContent="Offline — checklist saved on this device";
-      console.error("JSONBin load error
+      console.error("JSONBin load error:",err);
+    }
+  }
+  function entry(n){const k=dateKey(dayDate(n));if(!data.days[k])data.days[k]={checks:[false,false,false,false],note:"",photos:[],mood:""};const x=data.days[k];if(!Array.isArray(x.checks))x.checks=[false,false,false,false];x.checks=MEALS.map((_,i)=>x.checks[i]===true);if(typeof x.note!=="string")x.note="";if(!Array.isArray(x.photos))x.photos=[];if(typeof x.mood!=="string")x.mood="";return x;}
+  const count=n=>entry(n).checks.filter(Boolean).length;
+  const completed=n=>count(n)===4;
+  function streak(){let n=Math.min(currentDay,TOTAL);if(n<1)return 0;let s=0;for(let i=n;i>=1;i--){if(completed(i))s++;else break;}return s;}
+  function longestStreak(){let best=0,run=0;for(let i=1;i<=TOTAL;i++){if(completed(i)){run++;best=Math.max(best,run);}else run=0;}return best;}
+  function completedDays(){let c=0;for(let i=1;i<=TOTAL;i++)if(completed(i))c++;return c;}
+  function notify(msg){const t=$("toast");t.textContent=msg;t.classList.add("show");clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove("show"),2400);}
+  function confetti(){const host=$("confetti");host.innerHTML="";for(let i=0;i<90;i++){const p=document.createElement("i");p.style.left=Math.random()*100+"%";p.style.animationDelay=Math.random()*.9+"s";p.style.animationDuration=(2.4+Math.random()*1.8)+"s";p.style.background=["#8ee3c1","#f5ce7a","#f39aab","#9bbcff","#e8b5f5"][i%5];host.appendChild(p);}setTimeout(()=>host.innerHTML="",5000);}
+  function renderHero(){
+    const day=currentDay,done=day?count(day):0,rem=Math.max(0,TOTAL-day),pct=day/TOTAL*100;
+    $("dayNum").textContent=day||"—";$("leftNum").textContent=rem;$("streakNum").textContent=streak()+" 🔥";$("doneNum").textContent=done+"/4";
+    $("dayPill").textContent=`DAY ${day||0} / ${TOTAL}`;$("todayDate").textContent=fmt.format(today);
+    $("progressText").textContent=`${day} of ${TOTAL} days`;$("progressFill").style.width=pct+"%";$("progressBar").setAttribute("aria-valuenow",day);
+    $("heroTitle").textContent=day===TOTAL?"You made it. What a beautiful achievement!":day===0?"Your journey is about to begin.":"Small steps. Meaningful progress.";
+  }
+  function renderMeals(){
+    const n=selectedDay,e=entry(n),d=dayDate(n),isFuture=d>today;
+    $("selectedHeading").textContent=n===currentDay?"Today's check-ins":`Day ${n} check-ins`;
+    $("selectedDate").textContent=fmt.format(d);$("noteDayLabel").textContent=`Day ${n}`;
+    const list=$("mealList");list.innerHTML="";
+    MEALS.forEach((m,i)=>{const row=document.createElement("div");row.className="meal"+(e.checks[i]?" done":"");const cb=document.createElement("input");cb.type="checkbox";cb.id="meal_"+i;cb.checked=e.checks[i];cb.disabled=isFuture;cb.addEventListener("change",()=>{e.checks[i]=cb.checked;persist();persistChecksToCloud(n);renderAll();if(count(n)===4){notify("All four check-ins complete. Lovely work! ✨");if(n===TOTAL)finishCelebration();}});const label=document.createElement("label");label.htmlFor=cb.id;const name=document.createElement("span");name.className="meal-name";name.textContent=m.name;const time=document.createElement("span");time.className="meal-time";time.textContent=m.time;label.append(name,time);row.append(cb,label);list.append(row);});
+    $("dailyNote").value=e.note;$("dailyNote").disabled=isFuture;$("photoInput").disabled=isFuture;
+    $("prevDay").disabled=n<=1;$("nextDay").disabled=n>=Math.min(TOTAL,currentDay||1);
+    renderMood(e,isFuture);
+    renderPhotos(e);
+  }
+  const MOODS=[{id:"great",face:"😄",label:"Great"},{id:"good",face:"🙂",label:"Good"},{id:"okay",face:"😐",label:"Okay"},{id:"low",face:"😔",label:"Low"},{id:"tough",face:"😣",label:"Tough"}];
+  function renderMood(e,isFuture){
+    const host=$("moodChoices");host.innerHTML="";
+    MOODS.forEach(m=>{const b=document.createElement("button");b.type="button";b.className="mood-btn"+(e.mood===m.id?" active":"");b.disabled=isFuture;b.setAttribute("aria-pressed",String(e.mood===m.id));const face=document.createElement("span");face.className="face";face.textContent=m.face;const label=document.createElement("small");label.textContent=m.label;b.append(face,label);b.addEventListener("click",()=>{e.mood=e.mood===m.id?"":m.id;persist();renderMood(e,isFuture);renderWeekly();});host.append(b);});
+  }
+
+  function renderCalendar(){
+    const host=$("calendar");host.innerHTML="";["M","T","W","T","F","S","S"].forEach(x=>{const el=document.createElement("div");el.className="weekday";el.textContent=x;host.append(el);});
+    const offset=(START.getDay()+6)%7;for(let z=0;z<offset;z++){const blank=document.createElement("div");host.append(blank);}
+    for(let n=1;n<=TOTAL;n++){const d=dayDate(n),c=count(n),el=document.createElement("button");el.className="daycell"+(c===4?" complete":c>0?" partial":"")+(n===selectedDay?" selected":"")+(dateKey(d)===dateKey(today)?" today":"")+(d>today?" future":"");el.type="button";el.disabled=d>today;el.setAttribute("aria-label",`Day ${n}, ${c} of 4 check-ins`);const num=document.createElement("span");num.className="d";num.textContent=d.getDate();const dot=document.createElement("i");dot.className="dot";el.append(num,dot);el.addEventListener("click",()=>{selectedDay=n;renderMeals();renderCalendar();});host.append(el);}
+    $("calendarCount").textContent=`${completedDays()} / ${TOTAL} complete`;
+  }
+  function renderPhotos(e){const host=$("photos");host.innerHTML="";e.photos.forEach((src,i)=>{const wrap=document.createElement("div");wrap.className="photo";const img=document.createElement("img");img.src=src;img.alt="Food memory";const b=document.createElement("button");b.type="button";b.textContent="×";b.setAttribute("aria-label","Remove photo");b.addEventListener("click",()=>{e.photos.splice(i,1);persist();renderPhotos(e);});wrap.append(img,b);host.append(wrap);});$("photoCount").textContent=`${e.photos.length} photo${e.photos.length===1?"":"s"}`;}
+  function renderWeekly(){
+    const host=$("weeklyStats"),recaps=$("weeklyRecaps");host.innerHTML="";recaps.innerHTML="";let overall=0,possible=0;
+    for(let w=0;w<9;w++){
+      const start=w*7+1,end=Math.min(TOTAL,start+6);let got=0,cap=0,full=0,moods={};
+      for(let n=start;n<=end;n++){if(dayDate(n)<=today){got+=count(n);cap+=4;if(completed(n))full++;const mood=entry(n).mood;if(mood)moods[mood]=(moods[mood]||0)+1;}}
+      overall+=got;possible+=cap;
+      const row=document.createElement("div");row.className="week-row";const label=document.createElement("b");label.textContent=`Week ${w+1}`;const track=document.createElement("div");track.className="week-track";const fill=document.createElement("div");fill.className="week-fill";fill.style.width=(cap?got/cap*100:0)+"%";track.append(fill);const value=document.createElement("span");value.className="muted";value.textContent=`${got}/${cap}`;row.append(label,track,value);host.append(row);
+      if(cap){const card=document.createElement("div");card.className="recap-card";const title=document.createElement("b");title.textContent=`Week ${w+1} · Days ${start}–${end}`;const score=document.createElement("strong");score.textContent=Math.round(got/cap*100)+"%";const detail=document.createElement("small");const topMood=Object.entries(moods).sort((a,b)=>b[1]-a[1])[0];detail.textContent=`${full} full days · ${topMood?`Mood: ${MOODS.find(m=>m.id===topMood[0]).label}`:"No mood logged"}`;card.append(title,score,detail);recaps.append(card);}
+    }
+    $("weeklySummary").textContent=possible?`${Math.round(overall/possible*100)}% of check-ins completed across ${Math.ceil(possible/4)} elapsed challenge days.`:"Your weekly stats will appear once the challenge begins.";
+  }
+  const awards=[{name:"First Steps",desc:"Complete your first day",emoji:"🌱",test:()=>completedDays()>=1},{name:"One Week",desc:"Complete 7 full days",emoji:"🌿",test:()=>completedDays()>=7},{name:"Two Weeks",desc:"Complete 14 full days",emoji:"🌼",test:()=>completedDays()>=14},{name:"Halfway Hero",desc:"Reach Day 30",emoji:"🏅",test:()=>currentDay>=30},{name:"Consistency",desc:"Reach a 7-day streak",emoji:"🔥",test:()=>longestStreak()>=7},{name:"A Month Strong",desc:"Complete 30 full days",emoji:"💎",test:()=>completedDays()>=30},{name:"Forty-Five",desc:"Reach Day 45",emoji:"🌟",test:()=>currentDay>=45},{name:"Perfect Finish",desc:"Complete all 60 days",emoji:"👑",test:()=>completedDays()===60},{name:"The Full Journey",desc:"Reach the final day",emoji:"🎉",test:()=>currentDay===60}];
+  function renderAwards(){const host=$("achievements");host.innerHTML="";let unlocked=0;awards.forEach(a=>{const ok=a.test();if(ok)unlocked++;const el=document.createElement("div");el.className="award"+(ok?" unlocked":"");const em=document.createElement("div");em.className="emoji";em.textContent=a.emoji;const name=document.createElement("b");name.textContent=a.name;const desc=document.createElement("small");desc.textContent=a.desc;el.append(em,name,desc);host.append(el);});$("achievementCount").textContent=`${unlocked} / ${awards.length} unlocked`;renderMilestones();}
+  function renderMilestones(){const host=$("milestoneTimeline");host.innerHTML="";[{day:1,label:"Begin",icon:"🌱"},{day:10,label:"10 days",icon:"🌿"},{day:20,label:"20 days",icon:"🌼"},{day:30,label:"Halfway",icon:"🏅"},{day:40,label:"40 days",icon:"🌟"},{day:50,label:"50 days",icon:"💎"},{day:60,label:"Finish",icon:"👑"}].forEach(m=>{const ok=currentDay>=m.day;const el=document.createElement("div");el.className="milestone"+(ok?" unlocked":"");const icon=document.createElement("div");icon.className="micon";icon.textContent=m.icon;const name=document.createElement("b");name.textContent=m.label;const day=document.createElement("small");day.textContent=`Day ${m.day}`;const status=document.createElement("div");status.className="status";status.textContent=ok?"Unlocked":"Upcoming";el.append(icon,name,day,status);host.append(el);});}
+  function renderFinal(){const show=currentDay===TOTAL;$("finalReport").classList.toggle("hidden",!show);if(show){const pct=Math.round(completedDays()/TOTAL*100);$("finalSummary").textContent=`You completed ${completedDays()} of 60 days (${pct}%). You checked in ${totalChecks()} times and your longest full-day streak was ${longestStreak()} days. Every little effort counts — congratulations!`;}}
+  function totalChecks(){let n=0;for(let i=1;i<=TOTAL;i++)n+=count(i);return n;}
+  function renderAll(){renderHero();renderMeals();renderCalendar();renderWeekly();renderAwards();renderFinal();}
+  function updateCountdown(){const end=new Date(2027,0,9,0,0,0,0),diff=Math.max(0,end-Date.now());const s=Math.floor(diff/1000);$("cdDays").textContent=Math.floor(s/86400);$("cdHours").textContent=pad(Math.floor(s%86400/3600));$("cdMins").textContent=pad(Math.floor(s%3600/60));$("cdSecs").textContent=pad(s%60);if(currentDay===TOTAL)$("countdown").classList.add("hidden");}
+  function finishCelebration(){confetti();$("finalReport").scrollIntoView({behavior:"smooth",block:"center"});}
+  function saveBlob(name,content,type){const blob=new Blob([content],{type}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download=name;a.click();URL.revokeObjectURL(url);}
+  function reportText(){let lines=["60 DAYS OF FOOD — FINAL REPORT","Started: 10 November 2026","Day 60: 8 January 2027",`Completed full days: ${completedDays()}/60`,`Total check-ins: ${totalChecks()}/240`,`Longest streak: ${longestStreak()} days`,"","DAILY HISTORY"];for(let n=1;n<=TOTAL;n++){const e=entry(n);lines.push(`Day ${n} (${dateKey(dayDate(n))}): ${e.checks.filter(Boolean).length}/4`);if(e.note)lines.push("Note: "+e.note);}return lines.join("\n");}
+  function moveDay(delta){const max=Math.min(TOTAL,currentDay||1);selectedDay=Math.max(1,Math.min(max,selectedDay+delta));renderMeals();renderCalendar();}
+  $("prevDay").addEventListener("click",()=>moveDay(-1));$("nextDay").addEventListener("click",()=>moveDay(1));
+  let touchStartX=0,touchStartY=0;
+  $("mealList").addEventListener("touchstart",e=>{if(e.touches.length===1){touchStartX=e.touches[0].clientX;touchStartY=e.touches[0].clientY;}},{passive:true});
+  $("mealList").addEventListener("touchend",e=>{if(!touchStartX)return;const dx=e.changedTouches[0].clientX-touchStartX,dy=e.changedTouches[0].clientY-touchStartY;if(Math.abs(dx)>65&&Math.abs(dx)>Math.abs(dy)*1.3)moveDay(dx<0?1:-1);touchStartX=0;touchStartY=0;},{passive:true});
+  $("dailyNote").addEventListener("input",()=>{entry(selectedDay).note=$("dailyNote").value;persist();});
+  $("photoInput").addEventListener("change",async ev=>{const files=[...ev.target.files];const e=entry(selectedDay);for(const file of files){if(!file.type.startsWith("image/"))continue;try{const src=await resizeImage(file);e.photos.push(src);}catch(err){notify("Could not load one of those photos.");}}persist();renderPhotos(e);ev.target.value="";});
+  function resizeImage(file){return new Promise((resolve,reject)=>{const reader=new FileReader();reader.onerror=reject;reader.onload=()=>{const img=new Image();img.onerror=reject;img.onload=()=>{const max=900,scale=Math.min(1,max/Math.max(img.width,img.height)),canvas=document.createElement("canvas");canvas.width=Math.round(img.width*scale);canvas.height=Math.round(img.height*scale);canvas.getContext("2d").drawImage(img,0,0,canvas.width,canvas.height);resolve(canvas.toDataURL("image/jpeg",.78));};img.src=reader.result;};reader.readAsDataURL(file);});}
+  $("exportBtn").addEventListener("click",()=>{
+    const backup={app:"60-days-food",version:2,exportedAt:new Date().toISOString(),challenge:{start:"2026-11-10",days:60,meals:MEALS},data};
+    saveBlob("60-days-food-full-backup.json",JSON.stringify(backup,null,2),"application/json");
+  });
+  $("restoreInput").addEventListener("change",async ev=>{
+    const file=ev.target.files?.[0];if(!file)return;
+    try{
+      const parsed=JSON.parse(await file.text());
+      const restored=parsed?.data?.days?parsed.data:parsed;
+      if(!restored||!restored.days||typeof restored.days!=="object")throw new Error("This file does not contain a valid 60 Days of Food backup.");
+      if(!confirm("Restore this backup? It will replace the current browser data, including notes, moods and photos."))return;
+      data={days:restored.days};for(let n=1;n<=TOTAL;n++)entry(n);persist();renderAll();
+      if(cloudReady){
+        try{
+          const read=await fetch(`${JSONBIN_URL}/latest`,{headers:{"X-Access-Key":JSONBIN_ACCESS_KEY}});
+          if(!read.ok)throw new Error("Could not read cloud checklist data");
+          const result=await read.json();const record=result.record&&typeof result.record==="object"?result.record:{};record.days=record.days&&typeof record.days==="object"?record.days:{};
+          for(let n=1;n<=TOTAL;n++)record.days[dateKey(dayDate(n))]=entry(n).checks;
+          const write=await fetch(JSONBIN_URL,{method:"PUT",headers:{"Content-Type":"application/json","X-Access-Key":JSONBIN_ACCESS_KEY},body:JSON.stringify(record)});
+          if(!write.ok)throw new Error("Could not restore cloud checklist data");
+          notify("Backup restored. Checklists synced to JSONBin.");
+        }catch(err){console.error(err);notify("Browser backup restored; cloud checklist sync failed.");}
+      }else{notify("Backup restored in this browser. Cloud sync is not connected yet.");}
+    }catch(err){alert(err.message||"Could not restore this backup.");}
+    finally{ev.target.value="";}
+  });
+  $("printBtn").addEventListener("click",()=>window.print());
+  $("celebrateBtn").addEventListener("click",finishCelebration);
+  $("downloadReportBtn").addEventListener("click",()=>saveBlob("60-days-food-final-report.txt",reportText(),"text/plain"));
+  readData();renderAll();updateCountdown();setInterval(updateCountdown,1000);
+  loadCloudChecks();
+  if(currentDay===TOTAL&&completedDays()===60&&!sessionStorage.getItem("food60-celebrated")){sessionStorage.setItem("food60-celebrated","1");setTimeout(confetti,600);}
+})();
+</script>
+</body>
+</html>

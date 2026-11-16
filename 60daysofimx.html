@@ -1,192 +1,213 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#101827">
-  <title>60 Days of Food — Countdown</title>
-  <style>
-    :root { color-scheme: dark; --bg:#0b1220; --panel:#141f31; --muted:#9aa9bd; --text:#f4f7fb; --accent:#8ee3c1; --line:#29374c; }
-    * { box-sizing:border-box; }
-    body { margin:0; min-height:100vh; padding:32px 16px; background:radial-gradient(ellipse at top,#1a2a40 0%,var(--bg) 58%); color:var(--text); font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif; }
-    main { width:min(720px,100%); margin:auto; }
-    header { text-align:center; margin:12px 0 28px; }
-    .eyebrow { color:var(--accent); text-transform:uppercase; letter-spacing:.16em; font-size:.75rem; font-weight:750; }
-    h1 { margin:8px 0 4px; font-size:clamp(2rem,7vw,3.2rem); line-height:1.05; letter-spacing:-.04em; }
-    .sub { color:var(--muted); margin:10px 0 0; }
-    .panel { background:rgba(20,31,49,.92); border:1px solid var(--line); border-radius:22px; padding:22px; box-shadow:0 18px 50px #0003; }
-    .stats { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:18px; }
-    .stat { background:#0e1828; border:1px solid var(--line); border-radius:16px; padding:14px 10px; text-align:center; }
-    .num { display:block; font-size:clamp(1.65rem,6vw,2.35rem); font-weight:800; line-height:1.1; color:var(--accent); font-variant-numeric:tabular-nums; }
-    .label { display:block; color:var(--muted); font-size:.78rem; margin-top:6px; }
-    .progress-head { display:flex; justify-content:space-between; gap:12px; color:var(--muted); font-size:.88rem; margin:16px 0 8px; }
-    .track { height:10px; background:#26354a; border-radius:99px; overflow:hidden; }
-    .fill { height:100%; width:0; background:linear-gradient(90deg,#65c9a4,#b3f1d7); border-radius:99px; transition:width .3s; }
-    .today { margin:20px 0 14px; display:flex; justify-content:space-between; gap:12px; align-items:center; flex-wrap:wrap; }
-    .today strong { font-size:1.1rem; }
-    .date { color:var(--muted); font-size:.9rem; }
-    .slots { display:grid; gap:10px; }
-    .slot { display:flex; align-items:center; gap:14px; padding:15px; border:1px solid var(--line); background:#101b2b; border-radius:15px; transition:background .2s,border-color .2s; }
-    .slot.done { border-color:#3e806b; background:#112b2a; }
-    .slot input { width:22px; height:22px; accent-color:#80dcb8; flex:0 0 auto; cursor:pointer; }
-    .slot label { display:flex; flex:1; align-items:center; justify-content:space-between; gap:12px; cursor:pointer; }
-    .meal { font-weight:700; }
-    .time { color:var(--muted); font-variant-numeric:tabular-nums; white-space:nowrap; }
-    .slot.done .meal { color:#a8e9cf; text-decoration:line-through; text-decoration-thickness:1px; }
-    .note { color:var(--muted); font-size:.82rem; margin:16px 2px 0; }
-    .footer { text-align:center; color:var(--muted); font-size:.78rem; margin:18px 0 0; }
-    @media(max-width:420px) { body{padding:22px 12px} .panel{padding:16px} .stat{padding:12px 6px} .label{font-size:.7rem} }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b1220">
+<title>60 Days of Food — Your Journey</title>
+<style>
+:root{color-scheme:dark;--bg:#080f1c;--panel:#111d2e;--panel2:#16253a;--line:#283950;--text:#f3f7fc;--muted:#9aabc0;--mint:#8ee3c1;--mint2:#b8f2dc;--gold:#f5ce7a;--rose:#f39aab;--shadow:0 22px 70px #0005}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;min-height:100vh;padding:28px 16px 56px;background:radial-gradient(ellipse at 50% -10%,#203653 0%,#0b1525 43%,var(--bg) 78%);color:var(--text);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+main{width:min(1040px,100%);margin:auto}.top{display:flex;justify-content:space-between;align-items:center;gap:16px;margin:4px 0 24px}.brand{display:flex;align-items:center;gap:12px}.brandmark{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(145deg,#a7f0d2,#4cae91);color:#082018;font-size:21px;box-shadow:0 8px 28px #6ed5ae33}.eyebrow{font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--mint);font-weight:800}.brand h1{font-size:clamp(1.45rem,4vw,2rem);letter-spacing:-.04em;margin:1px 0 0}.top-actions{display:flex;gap:8px;flex-wrap:wrap}.btn{border:1px solid var(--line);background:#17263a;color:var(--text);padding:10px 14px;border-radius:12px;font-weight:650;cursor:pointer;transition:.2s}.btn:hover{transform:translateY(-1px);border-color:#668a9c}.btn.primary{background:var(--mint);color:#092018;border-color:transparent}.btn.danger{color:#ffb2bf}.hero{position:relative;overflow:hidden;border:1px solid #35516a;border-radius:26px;padding:clamp(20px,4vw,34px);background:linear-gradient(115deg,#172c40ed,#122033f2 60%,#193448);box-shadow:var(--shadow);margin-bottom:18px}.hero:after{content:"";position:absolute;width:300px;height:300px;border-radius:50%;right:-100px;top:-180px;background:#8ee3c11c;filter:blur(4px)}.hero-top{position:relative;z-index:1;display:flex;justify-content:space-between;align-items:flex-start;gap:20px}.hero h2{font-size:clamp(1.8rem,5vw,3rem);line-height:1.04;letter-spacing:-.055em;margin:9px 0}.sub{color:var(--muted);margin:0}.day-pill{white-space:nowrap;border:1px solid #57806f;background:#17392f;color:var(--mint2);padding:8px 12px;border-radius:99px;font-size:.8rem;font-weight:750}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:24px 0 20px;position:relative;z-index:1}.stat{padding:14px;border:1px solid #30445b;background:#0c1929a8;border-radius:16px;min-width:0}.stat .value{font-size:clamp(1.45rem,4vw,2.1rem);font-weight:850;line-height:1.15;color:var(--mint);font-variant-numeric:tabular-nums}.stat .label{font-size:.76rem;color:var(--muted);margin-top:5px}.progress-head{display:flex;justify-content:space-between;color:#c4d0df;font-size:.85rem;margin-bottom:8px}.track{height:10px;background:#304158;border-radius:99px;overflow:hidden}.fill{height:100%;width:0;background:linear-gradient(90deg,#56b995,#b7f1d9);border-radius:99px;transition:width .8s cubic-bezier(.2,.8,.2,1)}.countdown{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px;position:relative;z-index:1}.timebox{background:#0a1726a8;border:1px solid #30445b;border-radius:12px;padding:8px 12px;min-width:70px;text-align:center}.timebox b{display:block;font-size:1.15rem;font-variant-numeric:tabular-nums}.timebox span{font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}.grid{display:grid;grid-template-columns:1.1fr .9fr;gap:16px}.panel{background:linear-gradient(145deg,#142237f2,#101b2b);border:1px solid var(--line);border-radius:21px;padding:20px;box-shadow:0 12px 35px #0002;min-width:0}.panel-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:15px}.panel h3{margin:0;font-size:1.05rem;letter-spacing:-.02em}.muted{color:var(--muted)}.meal-list{display:grid;gap:9px}.meal{display:flex;align-items:center;gap:12px;padding:13px;border:1px solid var(--line);background:#0d1929;border-radius:14px;transition:.2s}.meal.done{border-color:#397b65;background:#102a28}.meal input{width:21px;height:21px;accent-color:var(--mint);cursor:pointer}.meal label{display:flex;justify-content:space-between;align-items:center;gap:12px;flex:1;cursor:pointer}.meal-name{font-weight:720}.meal-time{font-size:.82rem;color:var(--muted);white-space:nowrap}.meal.done .meal-name{color:var(--mint2);text-decoration:line-through}.today-foot{font-size:.8rem;color:var(--muted);margin:13px 2px 0}.calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}.weekday{text-align:center;color:var(--muted);font-size:.68rem;padding:4px 0}.daycell{min-width:0;aspect-ratio:1;border:1px solid var(--line);border-radius:10px;background:#0d1929;color:var(--text);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;transition:.18s;padding:3px}.daycell:hover{border-color:var(--mint);transform:translateY(-2px)}.daycell .d{font-size:.82rem;font-weight:750}.daycell .dot{width:5px;height:5px;border-radius:50%;background:#53647a}.daycell.complete{background:#15382f;border-color:#397b65}.daycell.complete .dot{background:var(--mint)}.daycell.partial{background:#352d1c;border-color:#8c7440}.daycell.partial .dot{background:var(--gold)}.daycell.selected{outline:2px solid var(--mint);outline-offset:2px}.daycell.future{opacity:.38;cursor:default}.daycell.today .d:after{content:" •";color:var(--mint)}.legend{display:flex;gap:13px;flex-wrap:wrap;margin-top:12px;font-size:.72rem;color:var(--muted)}.legend span{display:flex;align-items:center;gap:5px}.key{width:8px;height:8px;border-radius:50%;background:#53647a}.key.green{background:var(--mint)}.key.yellow{background:var(--gold)}.notes-area{width:100%;min-height:104px;resize:vertical;background:#0b1727;color:var(--text);border:1px solid var(--line);border-radius:13px;padding:12px;font:inherit;outline:none}.notes-area:focus,input:focus-visible,button:focus-visible{outline:2px solid var(--mint);outline-offset:2px}.note-actions{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:9px}.upload{display:inline-flex;align-items:center;gap:7px;border:1px dashed #54708a;border-radius:12px;padding:10px 12px;color:#c7d7e8;cursor:pointer;font-size:.82rem}.upload input{display:none}.photos{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}.photo{width:82px;height:82px;position:relative}.photo img{width:100%;height:100%;object-fit:cover;border-radius:12px;border:1px solid var(--line)}.photo button{position:absolute;right:-6px;top:-6px;border:0;border-radius:50%;width:23px;height:23px;background:#743746;color:white;cursor:pointer}.week-bars{display:grid;gap:12px}.week-row{display:grid;grid-template-columns:64px 1fr 42px;align-items:center;gap:10px;font-size:.8rem}.week-track{height:9px;background:#293a50;border-radius:99px;overflow:hidden}.week-fill{height:100%;background:linear-gradient(90deg,#56b995,#b7f1d9);border-radius:99px}.achievement-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.award{border:1px solid var(--line);background:#0d1929;border-radius:14px;padding:12px;text-align:center;opacity:.42;filter:saturate(.5)}.award.unlocked{opacity:1;filter:none;border-color:#786b42;background:#2c291d;animation:pop .45s ease both}.award .emoji{font-size:1.5rem}.award b{display:block;font-size:.77rem;margin-top:4px}.award small{color:var(--muted);font-size:.67rem}.section-gap{margin-top:16px}.report{border:1px solid #75623b;background:linear-gradient(120deg,#302a1d,#1a2633);border-radius:18px;padding:20px}.report h3{margin:0 0 7px;color:#ffe2a2}.hidden{display:none!important}.toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,20px);background:#e0f8ed;color:#092018;padding:11px 16px;border-radius:99px;font-weight:750;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:.25s;z-index:5}.toast.show{opacity:1;transform:translate(-50%,0)}.confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:10}.confetti i{position:absolute;top:-15px;width:8px;height:13px;background:var(--mint);animation:fall 3.2s linear forwards}.footer{text-align:center;color:var(--muted);font-size:.75rem;margin:22px 0}.small{font-size:.75rem}.inline-actions{display:flex;gap:8px;flex-wrap:wrap}
+@keyframes pop{0%{transform:scale(.88)}70%{transform:scale(1.04)}100%{transform:scale(1)}}@keyframes fall{to{transform:translateY(110vh) rotate(700deg);opacity:.1}}@media(max-width:760px){.grid{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}.top{align-items:flex-start}.hero-top{flex-direction:column}.day-pill{align-self:flex-start}}@media(max-width:420px){body{padding:18px 11px 42px}.panel{padding:15px}.daycell{border-radius:7px}.daycell .d{font-size:.74rem}.achievement-grid{grid-template-columns:repeat(2,1fr)}.brandmark{width:37px;height:37px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+</style>
 </head>
 <body>
 <main>
-  <header>
-    <div class="eyebrow">A little promise · 4 check-ins a day</div>
-    <h1>60 Days of Food</h1>
-    <p class="sub">One day at a time. Four little check-ins.</p>
+  <header class="top">
+    <div class="brand"><div class="brandmark">✦</div><div><div class="eyebrow">A little promise · 4 check-ins a day</div><h1>60 Days of Food</h1></div></div>
+    <div class="top-actions"><button class="btn" id="exportBtn">Export data</button><button class="btn" id="printBtn">Print report</button></div>
   </header>
 
-  <section class="panel" aria-label="Challenge tracker">
+  <section class="hero">
+    <div class="hero-top"><div><div class="eyebrow">One day at a time</div><h2 id="heroTitle">Your journey, beautifully tracked.</h2><p class="sub" id="todayDate">Loading your day…</p></div><div class="day-pill" id="dayPill">DAY 7 / 60</div></div>
     <div class="stats">
-      <div class="stat"><span class="num" id="dayNum">7</span><span class="label">Current day</span></div>
-      <div class="stat"><span class="num" id="leftNum">53</span><span class="label">Days to go</span></div>
-      <div class="stat"><span class="num" id="doneNum">0/4</span><span class="label">Today's check-ins</span></div>
+      <div class="stat"><div class="value" id="dayNum">7</div><div class="label">Current day</div></div>
+      <div class="stat"><div class="value" id="leftNum">53</div><div class="label">Days to go</div></div>
+      <div class="stat"><div class="value" id="streakNum">0 🔥</div><div class="label">Current streak</div></div>
+      <div class="stat"><div class="value" id="doneNum">0/4</div><div class="label">Today's check-ins</div></div>
     </div>
-
-    <div class="progress-head"><span>Challenge progress</span><span id="progressText">7 of 60 days</span></div>
-    <div class="track" role="progressbar" aria-label="Challenge progress" aria-valuemin="0" aria-valuemax="60" aria-valuenow="7" id="progressBar"><div class="fill" id="progressFill"></div></div>
-
-    <div class="today">
-      <strong id="dayHeading">Day 7</strong>
-      <span class="date" id="dateText">Monday, 16 November 2026</span>
-    </div>
-
-    <div class="slots" id="slots">
-      <div class="slot"><input type="checkbox" id="meal0"><label for="meal0"><span class="meal">Breakfast</span><span class="time">9:00 AM</span></label></div>
-      <div class="slot"><input type="checkbox" id="meal1"><label for="meal1"><span class="meal">Lunch</span><span class="time">1:00 PM</span></label></div>
-      <div class="slot"><input type="checkbox" id="meal2"><label for="meal2"><span class="meal">Afternoon</span><span class="time">3:30 PM</span></label></div>
-      <div class="slot"><input type="checkbox" id="meal3"><label for="meal3"><span class="meal">Dinner</span><span class="time">7:00 PM</span></label></div>
-    </div>
-    <p class="note">Tick each one when she confirms she has eaten. Checkmarks are saved in this browser.</p>
+    <div class="progress-head"><span>Challenge progress</span><strong id="progressText">7 of 60 days</strong></div><div class="track" role="progressbar" aria-label="Challenge progress" aria-valuemin="0" aria-valuemax="60" aria-valuenow="7" id="progressBar"><div class="fill" id="progressFill"></div></div>
+    <div class="countdown" id="countdown"><div class="timebox"><b id="cdDays">—</b><span>Days</span></div><div class="timebox"><b id="cdHours">—</b><span>Hours</span></div><div class="timebox"><b id="cdMins">—</b><span>Minutes</span></div><div class="timebox"><b id="cdSecs">—</b><span>Seconds</span></div></div>
   </section>
-  <p class="footer">Started 10 November 2026 · Day 60 is 8 January 2027</p>
-</main>
 
+  <div class="grid">
+    <section class="panel">
+      <div class="panel-head"><h3 id="selectedHeading">Today's check-ins</h3><span class="muted small" id="selectedDate"></span></div>
+      <div class="meal-list" id="mealList"></div>
+      <p class="today-foot">Tick each one when she confirms she has eaten. Checklists sync across devices; notes and photos stay in this browser. <span id="cloudStatus" aria-live="polite">Connecting checklist sync…</span></p>
+    </section>
+    <section class="panel">
+      <div class="panel-head"><h3>60-day calendar</h3><span class="muted small" id="calendarCount">0 / 60 complete</span></div>
+      <div class="calendar" id="calendar"></div>
+      <div class="legend"><span><i class="key green"></i>All 4 done</span><span><i class="key yellow"></i>In progress</span><span><i class="key"></i>Not started</span></div>
+    </section>
+  </div>
+
+  <div class="grid section-gap">
+    <section class="panel">
+      <div class="panel-head"><h3>Daily notes & memories</h3><span class="muted small" id="noteDayLabel">Day 7</span></div>
+      <textarea class="notes-area" id="dailyNote" placeholder="A little note about today… What did she enjoy? How did the day go?"></textarea>
+      <div class="note-actions"><label class="upload">＋ Add food photos<input type="file" id="photoInput" accept="image/*" multiple></label><span class="muted small" id="photoCount">0 photos</span></div>
+      <div class="photos" id="photos"></div>
+      <p class="muted small">Notes and photos are stored locally in this browser. Photos are resized to help save space.</p>
+    </section>
+    <section class="panel">
+      <div class="panel-head"><h3>Weekly consistency</h3><span class="muted small">4 check-ins per day</span></div>
+      <div class="week-bars" id="weeklyStats"></div>
+      <p class="muted small" id="weeklySummary"></p>
+    </section>
+  </div>
+
+  <section class="panel section-gap">
+    <div class="panel-head"><h3>Milestones & achievements</h3><span class="muted small" id="achievementCount">0 unlocked</span></div>
+    <div class="achievement-grid" id="achievements"></div>
+  </section>
+
+  <section class="report section-gap hidden" id="finalReport">
+    <div class="eyebrow">The finish line</div><h3>60 days. A journey worth celebrating. ✨</h3>
+    <p id="finalSummary"></p>
+    <div class="inline-actions"><button class="btn primary" id="celebrateBtn">Celebrate again 🎉</button><button class="btn" id="downloadReportBtn">Download final report</button></div>
+  </section>
+
+  <p class="footer">Started 10 November 2026 · Day 60 is 8 January 2027 · Your progress stays in this browser</p>
+</main>
+<div class="toast" id="toast" role="status" aria-live="polite"></div><div class="confetti" id="confetti"></div>
 <script>
 (() => {
-  // Day 1 is 10 Nov 2026. Uses the viewer's local calendar date and time.
-  const start = new Date(2026, 10, 10);
-  const totalDays = 60;
-  const dateNow = new Date();
-  const today = new Date(dateNow.getFullYear(), dateNow.getMonth(), dateNow.getDate());
-  const elapsed = Math.floor((today - start) / 86400000);
-  const day = Math.min(totalDays, Math.max(0, elapsed + 1));
-  const remaining = Math.max(0, totalDays - day);
-
-  const fmt = new Intl.DateTimeFormat(undefined, { weekday:'long', day:'numeric', month:'long', year:'numeric' });
-  document.getElementById('dayNum').textContent = day || '—';
-  document.getElementById('leftNum').textContent = remaining;
-  document.getElementById('dayHeading').textContent = day ? `Day ${day}` : 'Not started yet';
-  document.getElementById('dateText').textContent = fmt.format(today);
-  document.getElementById('progressText').textContent = `${day} of ${totalDays} days`;
-  document.getElementById('progressFill').style.width = `${(day / totalDays) * 100}%`;
-  document.getElementById('progressBar').setAttribute('aria-valuenow', day);
-
-  const checks = [...document.querySelectorAll('.slot input')];
-  const storageKey = `60-days-food-checkins-${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-  const binId = '6afa3040ac6210605a8a49aa';
-  const accessKey = '$2a$10$bt9dn43e9rY2hBjNqeVmmurPCeTvx5YE1OpSlPdFtULLFP9u.GURq';
-  const apiUrl = `https://api.jsonbin.io/v3/b/${binId}`;
-  const dateKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-  const note = document.querySelector('.note');
-  let saveQueue = Promise.resolve();
+  "use strict";
+  // Challenge dates and meal schedule preserved from the original tracker.
+  const START = new Date(2026, 10, 10, 0, 0, 0, 0);
+  const TOTAL = 60;
+  const MEALS = [{name:"Breakfast",time:"9:00 AM"},{name:"Lunch",time:"1:00 PM"},{name:"Afternoon",time:"3:30 PM"},{name:"Dinner",time:"7:00 PM"}];
+  const PREFIX = "60-days-food-checkins-";
+  const DATA_KEY = "60-days-food-v2";
+  // Keep the original JSONBin checklist sync. Only meal check-ins are sent to the cloud;
+  // notes and food photos remain in this browser's localStorage.
+  const JSONBIN_ID = "6afa3040ac6210605a8a49aa";
+  const JSONBIN_ACCESS_KEY = "$2a$10$bt9dn43e9rY2hBjNqeVmmurPCeTvx5YE1OpSlPdFtULLFP9u.GURq";
+  const JSONBIN_URL = `https://api.jsonbin.io/v3/b/${JSONBIN_ID}`;
   let cloudReady = false;
+  let cloudQueue = Promise.resolve();
+  const $ = id => document.getElementById(id);
+  const pad = n => String(n).padStart(2,"0");
+  const dateKey = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+  const dayDate = n => new Date(START.getFullYear(),START.getMonth(),START.getDate()+n-1);
+  const today = new Date(); today.setHours(0,0,0,0);
+  const elapsed = Math.floor((today-START)/86400000);
+  const currentDay = Math.min(TOTAL,Math.max(0,elapsed+1));
+  const fmt = new Intl.DateTimeFormat(undefined,{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+  let selectedDay = currentDay || 1;
+  let data = {days:{}};
+  let toastTimer;
 
-  const getChecks = () => checks.map(c => c.checked);
-  const showChecks = values => {
-    checks.forEach((c, i) => { c.checked = values?.[i] === true; });
-    updateDisplay();
-  };
-  const updateDisplay = () => {
-    const count = checks.filter(c => c.checked).length;
-    document.getElementById('doneNum').textContent = `${count}/4`;
-    checks.forEach(c => c.closest('.slot').classList.toggle('done', c.checked));
-  };
-
-  // Load the shared check-ins from JSONBin. Keep a local copy as an offline fallback.
-  const loadCloud = async () => {
-    try {
-      const response = await fetch(`${apiUrl}/latest`, {
-        headers: { 'X-Access-Key': accessKey }
-      });
-      if (!response.ok) throw new Error(`JSONBin read failed (${response.status})`);
-      const result = await response.json();
-      const days = result.record?.days || {};
-      cloudReady = true;
-      if (Array.isArray(days[dateKey])) {
-        showChecks(days[dateKey]);
-      } else {
-        let local = [];
-        try { local = JSON.parse(localStorage.getItem(storageKey) || '[]'); } catch (_) {}
-        showChecks(local);
-        if (local.some(Boolean)) queueCloudSave();
+  function readData(){
+    try { const parsed=JSON.parse(localStorage.getItem(DATA_KEY)||"null"); if(parsed&&parsed.days&&typeof parsed.days==="object") data=parsed; } catch(e){}
+    // Migrate the original install's per-date checkbox keys without changing their values.
+    for(let i=1;i<=TOTAL;i++){
+      const key=PREFIX+dateKey(dayDate(i));
+      if(!data.days[dateKey(dayDate(i))]){
+        try{const old=JSON.parse(localStorage.getItem(key)||"null");if(Array.isArray(old))data.days[dateKey(dayDate(i))]={checks:MEALS.map((_,j)=>old[j]===true),note:"",photos:[]};}catch(e){}
       }
-      note.textContent = 'Check-ins sync online across devices.';
-    } catch (error) {
-      let local = [];
-      try { local = JSON.parse(localStorage.getItem(storageKey) || '[]'); } catch (_) {}
-      showChecks(local);
-      note.textContent = 'Could not connect to online storage. Check-ins are saved on this device for now.';
-      console.error(error);
     }
-  };
-
-  // Read the latest record before updating so check-ins for other dates are preserved.
-  const saveCloud = async () => {
-    const values = getChecks();
-    try {
-      const read = await fetch(`${apiUrl}/latest`, {
-        headers: { 'X-Access-Key': accessKey }
-      });
-      if (!read.ok) throw new Error(`JSONBin read failed (${read.status})`);
-      const result = await read.json();
-      const record = result.record && typeof result.record === 'object' ? result.record : {};
-      record.days = record.days && typeof record.days === 'object' ? record.days : {};
-      record.days[dateKey] = values;
-
-      const write = await fetch(apiUrl, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Access-Key': accessKey
-        },
-        body: JSON.stringify(record)
-      });
-      if (!write.ok) throw new Error(`JSONBin update failed (${write.status})`);
-      note.textContent = 'Check-ins saved online.';
-    } catch (error) {
-      note.textContent = 'Online save failed. Your check-ins are saved on this device; please try again later.';
-      console.error(error);
+    // Older versions stored only the current date; keep it if present.
+    persist();
+  }
+  function persist(){try{localStorage.setItem(DATA_KEY,JSON.stringify(data));}catch(e){notify("Storage is full. Remove some photos and try again.");}}
+  function persistChecksToCloud(n){
+    if(!cloudReady) return;
+    const key=dateKey(dayDate(n));
+    const checks=entry(n).checks.slice();
+    cloudQueue=cloudQueue.then(async()=>{
+      const read=await fetch(`${JSONBIN_URL}/latest`,{headers:{"X-Access-Key":JSONBIN_ACCESS_KEY}});
+      if(!read.ok) throw new Error(`JSONBin read failed (${read.status})`);
+      const result=await read.json();
+      const record=result.record&&typeof result.record==="object"?result.record:{};
+      record.days=record.days&&typeof record.days==="object"?record.days:{};
+      record.days[key]=checks;
+      const write=await fetch(JSONBIN_URL,{method:"PUT",headers:{"Content-Type":"application/json","X-Access-Key":JSONBIN_ACCESS_KEY},body:JSON.stringify(record)});
+      if(!write.ok) throw new Error(`JSONBin update failed (${write.status})`);
+      $("cloudStatus").textContent="Checklist synced across devices";
+    }).catch(err=>{
+      $("cloudStatus").textContent="Cloud sync failed — saved on this device";
+      console.error("JSONBin sync error:",err);
+    });
+  }
+  async function loadCloudChecks(){
+    try{
+      const response=await fetch(`${JSONBIN_URL}/latest`,{headers:{"X-Access-Key":JSONBIN_ACCESS_KEY}});
+      if(!response.ok) throw new Error(`JSONBin read failed (${response.status})`);
+      const result=await response.json();
+      const days=result.record?.days||{};
+      for(let n=1;n<=TOTAL;n++){
+        const key=dateKey(dayDate(n));
+        if(Array.isArray(days[key])) entry(n).checks=MEALS.map((_,i)=>days[key][i]===true);
+      }
+      cloudReady=true;
+      persist();
+      $("cloudStatus").textContent="Checklist synced across devices";
+      renderAll();
+    }catch(err){
+      $("cloudStatus").textContent="Offline — checklist saved on this device";
+      console.error("JSONBin load error:",err);
     }
-  };
-
-  const queueCloudSave = () => {
-    saveQueue = saveQueue.then(saveCloud, saveCloud);
-  };
-
-  checks.forEach(c => c.addEventListener('change', () => {
-    updateDisplay();
-    try { localStorage.setItem(storageKey, JSON.stringify(getChecks())); } catch (_) {}
-    if (cloudReady) queueCloudSave();
-  }));
-
-  // Restore immediately from this browser, then replace with the shared online copy.
-  try { showChecks(JSON.parse(localStorage.getItem(storageKey) || '[]')); }
-  catch (_) { updateDisplay(); }
-  loadCloud();
-
-  if (day === 0) document.getElementById('leftNum').textContent = totalDays;
-  if (day === totalDays) document.getElementById('dayHeading').textContent = 'Day 60 · You made it!';
+  }
+  function entry(n){const k=dateKey(dayDate(n));if(!data.days[k])data.days[k]={checks:[false,false,false,false],note:"",photos:[]};const x=data.days[k];if(!Array.isArray(x.checks))x.checks=[false,false,false,false];x.checks=MEALS.map((_,i)=>x.checks[i]===true);if(typeof x.note!=="string")x.note="";if(!Array.isArray(x.photos))x.photos=[];return x;}
+  const count=n=>entry(n).checks.filter(Boolean).length;
+  const completed=n=>count(n)===4;
+  function streak(){let n=Math.min(currentDay,TOTAL);if(n<1)return 0;let s=0;for(let i=n;i>=1;i--){if(completed(i))s++;else break;}return s;}
+  function longestStreak(){let best=0,run=0;for(let i=1;i<=TOTAL;i++){if(completed(i)){run++;best=Math.max(best,run);}else run=0;}return best;}
+  function completedDays(){let c=0;for(let i=1;i<=TOTAL;i++)if(completed(i))c++;return c;}
+  function notify(msg){const t=$("toast");t.textContent=msg;t.classList.add("show");clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove("show"),2400);}
+  function confetti(){const host=$("confetti");host.innerHTML="";for(let i=0;i<90;i++){const p=document.createElement("i");p.style.left=Math.random()*100+"%";p.style.animationDelay=Math.random()*.9+"s";p.style.animationDuration=(2.4+Math.random()*1.8)+"s";p.style.background=["#8ee3c1","#f5ce7a","#f39aab","#9bbcff","#e8b5f5"][i%5];host.appendChild(p);}setTimeout(()=>host.innerHTML="",5000);}
+  function renderHero(){
+    const day=currentDay,done=day?count(day):0,rem=Math.max(0,TOTAL-day),pct=day/TOTAL*100;
+    $("dayNum").textContent=day||"—";$("leftNum").textContent=rem;$("streakNum").textContent=streak()+" 🔥";$("doneNum").textContent=done+"/4";
+    $("dayPill").textContent=`DAY ${day||0} / ${TOTAL}`;$("todayDate").textContent=fmt.format(today);
+    $("progressText").textContent=`${day} of ${TOTAL} days`;$("progressFill").style.width=pct+"%";$("progressBar").setAttribute("aria-valuenow",day);
+    $("heroTitle").textContent=day===TOTAL?"You made it. What a beautiful achievement!":day===0?"Your journey is about to begin.":"Small steps. Meaningful progress.";
+  }
+  function renderMeals(){
+    const n=selectedDay,e=entry(n),d=dayDate(n),isFuture=d>today;
+    $("selectedHeading").textContent=n===currentDay?"Today's check-ins":`Day ${n} check-ins`;
+    $("selectedDate").textContent=fmt.format(d);$("noteDayLabel").textContent=`Day ${n}`;
+    const list=$("mealList");list.innerHTML="";
+    MEALS.forEach((m,i)=>{const row=document.createElement("div");row.className="meal"+(e.checks[i]?" done":"");const cb=document.createElement("input");cb.type="checkbox";cb.id="meal_"+i;cb.checked=e.checks[i];cb.disabled=isFuture;cb.addEventListener("change",()=>{e.checks[i]=cb.checked;persist();persistChecksToCloud(n);renderAll();if(count(n)===4){notify("All four check-ins complete. Lovely work! ✨");if(n===TOTAL)finishCelebration();}});const label=document.createElement("label");label.htmlFor=cb.id;const name=document.createElement("span");name.className="meal-name";name.textContent=m.name;const time=document.createElement("span");time.className="meal-time";time.textContent=m.time;label.append(name,time);row.append(cb,label);list.append(row);});
+    $("dailyNote").value=e.note;$("dailyNote").disabled=isFuture;$("photoInput").disabled=isFuture;
+    renderPhotos(e);
+  }
+  function renderCalendar(){
+    const host=$("calendar");host.innerHTML="";["M","T","W","T","F","S","S"].forEach(x=>{const el=document.createElement("div");el.className="weekday";el.textContent=x;host.append(el);});
+    const offset=(START.getDay()+6)%7;for(let z=0;z<offset;z++){const blank=document.createElement("div");host.append(blank);}
+    for(let n=1;n<=TOTAL;n++){const d=dayDate(n),c=count(n),el=document.createElement("button");el.className="daycell"+(c===4?" complete":c>0?" partial":"")+(n===selectedDay?" selected":"")+(dateKey(d)===dateKey(today)?" today":"")+(d>today?" future":"");el.type="button";el.disabled=d>today;el.setAttribute("aria-label",`Day ${n}, ${c} of 4 check-ins`);const num=document.createElement("span");num.className="d";num.textContent=d.getDate();const dot=document.createElement("i");dot.className="dot";el.append(num,dot);el.addEventListener("click",()=>{selectedDay=n;renderMeals();renderCalendar();});host.append(el);}
+    $("calendarCount").textContent=`${completedDays()} / ${TOTAL} complete`;
+  }
+  function renderPhotos(e){const host=$("photos");host.innerHTML="";e.photos.forEach((src,i)=>{const wrap=document.createElement("div");wrap.className="photo";const img=document.createElement("img");img.src=src;img.alt="Food memory";const b=document.createElement("button");b.type="button";b.textContent="×";b.setAttribute("aria-label","Remove photo");b.addEventListener("click",()=>{e.photos.splice(i,1);persist();renderPhotos(e);});wrap.append(img,b);host.append(wrap);});$("photoCount").textContent=`${e.photos.length} photo${e.photos.length===1?"":"s"}`;}
+  function renderWeekly(){
+    const host=$("weeklyStats");host.innerHTML="";let overall=0,possible=0;
+    for(let w=0;w<9;w++){const start=w*7+1,end=Math.min(TOTAL,start+6);let got=0,cap=0;for(let n=start;n<=end;n++){if(dayDate(n)<=today){got+=count(n);cap+=4;}}overall+=got;possible+=cap;const row=document.createElement("div");row.className="week-row";const label=document.createElement("b");label.textContent=`Week ${w+1}`;const track=document.createElement("div");track.className="week-track";const fill=document.createElement("div");fill.className="week-fill";fill.style.width=(cap?got/cap*100:0)+"%";track.append(fill);const value=document.createElement("span");value.className="muted";value.textContent=`${got}/${cap}`;row.append(label,track,value);host.append(row);}
+    $("weeklySummary").textContent=possible?`${Math.round(overall/possible*100)}% of check-ins completed across ${Math.ceil(possible/4)} elapsed challenge days.`:"Your weekly stats will appear once the challenge begins.";
+  }
+  const awards=[{name:"First Steps",desc:"Complete your first day",emoji:"🌱",test:()=>completedDays()>=1},{name:"One Week",desc:"Complete 7 full days",emoji:"🌿",test:()=>completedDays()>=7},{name:"Two Weeks",desc:"Complete 14 full days",emoji:"🌼",test:()=>completedDays()>=14},{name:"Halfway Hero",desc:"Reach Day 30",emoji:"🏅",test:()=>currentDay>=30},{name:"Consistency",desc:"Reach a 7-day streak",emoji:"🔥",test:()=>longestStreak()>=7},{name:"A Month Strong",desc:"Complete 30 full days",emoji:"💎",test:()=>completedDays()>=30},{name:"Forty-Five",desc:"Reach Day 45",emoji:"🌟",test:()=>currentDay>=45},{name:"Perfect Finish",desc:"Complete all 60 days",emoji:"👑",test:()=>completedDays()===60},{name:"The Full Journey",desc:"Reach the final day",emoji:"🎉",test:()=>currentDay===60}];
+  function renderAwards(){const host=$("achievements");host.innerHTML="";let unlocked=0;awards.forEach(a=>{const ok=a.test();if(ok)unlocked++;const el=document.createElement("div");el.className="award"+(ok?" unlocked":"");const em=document.createElement("div");em.className="emoji";em.textContent=a.emoji;const name=document.createElement("b");name.textContent=a.name;const desc=document.createElement("small");desc.textContent=a.desc;el.append(em,name,desc);host.append(el);});$("achievementCount").textContent=`${unlocked} / ${awards.length} unlocked`;}
+  function renderFinal(){const show=currentDay===TOTAL;$("finalReport").classList.toggle("hidden",!show);if(show){const pct=Math.round(completedDays()/TOTAL*100);$("finalSummary").textContent=`You completed ${completedDays()} of 60 days (${pct}%). You checked in ${totalChecks()} times and your longest full-day streak was ${longestStreak()} days. Every little effort counts — congratulations!`;}}
+  function totalChecks(){let n=0;for(let i=1;i<=TOTAL;i++)n+=count(i);return n;}
+  function renderAll(){renderHero();renderMeals();renderCalendar();renderWeekly();renderAwards();renderFinal();}
+  function updateCountdown(){const end=new Date(2027,0,9,0,0,0,0),diff=Math.max(0,end-Date.now());const s=Math.floor(diff/1000);$("cdDays").textContent=Math.floor(s/86400);$("cdHours").textContent=pad(Math.floor(s%86400/3600));$("cdMins").textContent=pad(Math.floor(s%3600/60));$("cdSecs").textContent=pad(s%60);if(currentDay===TOTAL)$("countdown").classList.add("hidden");}
+  function finishCelebration(){confetti();$("finalReport").scrollIntoView({behavior:"smooth",block:"center"});}
+  function saveBlob(name,content,type){const blob=new Blob([content],{type}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download=name;a.click();URL.revokeObjectURL(url);}
+  function reportText(){let lines=["60 DAYS OF FOOD — FINAL REPORT","Started: 10 November 2026","Day 60: 8 January 2027",`Completed full days: ${completedDays()}/60`,`Total check-ins: ${totalChecks()}/240`,`Longest streak: ${longestStreak()} days`,"","DAILY HISTORY"];for(let n=1;n<=TOTAL;n++){const e=entry(n);lines.push(`Day ${n} (${dateKey(dayDate(n))}): ${e.checks.filter(Boolean).length}/4`);if(e.note)lines.push("Note: "+e.note);}return lines.join("\n");}
+  $("dailyNote").addEventListener("input",()=>{entry(selectedDay).note=$("dailyNote").value;persist();});
+  $("photoInput").addEventListener("change",async ev=>{const files=[...ev.target.files];const e=entry(selectedDay);for(const file of files){if(!file.type.startsWith("image/"))continue;try{const src=await resizeImage(file);e.photos.push(src);}catch(err){notify("Could not load one of those photos.");}}persist();renderPhotos(e);ev.target.value="";});
+  function resizeImage(file){return new Promise((resolve,reject)=>{const reader=new FileReader();reader.onerror=reject;reader.onload=()=>{const img=new Image();img.onerror=reject;img.onload=()=>{const max=900,scale=Math.min(1,max/Math.max(img.width,img.height)),canvas=document.createElement("canvas");canvas.width=Math.round(img.width*scale);canvas.height=Math.round(img.height*scale);canvas.getContext("2d").drawImage(img,0,0,canvas.width,canvas.height);resolve(canvas.toDataURL("image/jpeg",.78));};img.src=reader.result;};reader.readAsDataURL(file);});}
+  $("exportBtn").addEventListener("click",()=>saveBlob("60-days-food-backup.json",JSON.stringify(data,null,2),"application/json"));
+  $("printBtn").addEventListener("click",()=>window.print());
+  $("celebrateBtn").addEventListener("click",finishCelebration);
+  $("downloadReportBtn").addEventListener("click",()=>saveBlob("60-days-food-final-report.txt",reportText(),"text/plain"));
+  readData();renderAll();updateCountdown();setInterval(updateCountdown,1000);
+  loadCloudChecks();
+  if(currentDay===TOTAL&&completedDays()===60&&!sessionStorage.getItem("food60-celebrated")){sessionStorage.setItem("food60-celebrated","1");setTimeout(confetti,600);}
 })();
 </script>
 </body>
